@@ -67,6 +67,8 @@ export function analyzeHSCode(code: HSCode, section: Section | undefined): Tarif
     { question: `How do I use HS Code ${formattedCode} for customs?`, answer: classificationTip },
     ...(ctx ? [{ question: `What are the trade regulations for ${section?.name}?`, answer: ctx.tradeNote }] : []),
     { question: `Is HS ${formattedCode} the same in every country?`, answer: `The first 6 digits of HS codes are standardized worldwide by the World Customs Organization (WCO). However, most countries add additional digits (8-10 total) for their national tariff schedules. Always verify the full code with your destination country's customs authority.` },
+    ...(code.us_avg_duty !== null && code.us_avg_duty !== undefined ? [{ question: `What is the US import duty for HS ${formattedCode}?`, answer: `The average US import duty for products under HS ${formattedCode} is approximately ${code.us_avg_duty}%${code.us_duty_range ? ` (range: ${code.us_duty_range})` : ''}. ${code.us_fta_notes || ''} Note: actual rates depend on the specific product classification and country of origin. Verify with USITC for official rates.` }] : []),
+    ...(code.us_fta_notes ? [{ question: `Can I get a lower tariff rate under a Free Trade Agreement?`, answer: `${code.us_fta_notes}. The US has FTAs with 20 countries including Canada, Mexico (USMCA), South Korea (KORUS), Australia, and others. To qualify for preferential rates, goods must meet rules of origin requirements and have proper documentation (e.g., Certificate of Origin).` }] : []),
   ];
 
   return {

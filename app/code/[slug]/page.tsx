@@ -92,6 +92,41 @@ export default async function CodePage({ params }: Props) {
         </div>
       </section>
 
+      {/* US Tariff Information */}
+      {code.us_avg_duty !== null && (
+        <section className="mb-8">
+          <h2 className="text-xl font-bold mb-3">🇺🇸 US Import Duty</h2>
+          <div className="border border-slate-200 rounded-lg overflow-hidden">
+            <div className="flex justify-between p-3 border-b border-slate-100 bg-red-50">
+              <span className="text-sm font-medium">Average Duty Rate</span>
+              <span className="text-lg font-bold text-red-700">{code.us_avg_duty}%</span>
+            </div>
+            {code.us_duty_range && (
+              <div className="flex justify-between p-3 border-b border-slate-100">
+                <span className="text-sm font-medium">Duty Range</span>
+                <span className="text-sm font-semibold">{code.us_duty_range}</span>
+              </div>
+            )}
+            {code.us_duty_notes && (
+              <div className="p-3 border-b border-slate-100 bg-slate-50">
+                <span className="text-sm font-medium block mb-1">Notes</span>
+                <span className="text-sm text-slate-600">{code.us_duty_notes}</span>
+              </div>
+            )}
+            {code.us_fta_notes && (
+              <div className="p-3">
+                <span className="text-sm font-medium block mb-1">Free Trade Agreements</span>
+                <span className="text-sm text-green-700">{code.us_fta_notes}</span>
+              </div>
+            )}
+          </div>
+          <p className="text-xs text-slate-400 mt-2">
+            Rates are approximate and based on MFN (Most Favored Nation) tariffs. Actual rates may vary by specific product classification.
+            Always verify with <a href="https://hts.usitc.gov" className="underline" target="_blank" rel="noopener">USITC</a> for official rates.
+          </p>
+        </section>
+      )}
+
       {/* Classification Tip */}
       <section className="mb-8">
         <h2 className="text-xl font-bold mb-3">Classification Guide</h2>

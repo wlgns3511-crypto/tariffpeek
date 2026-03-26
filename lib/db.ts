@@ -18,6 +18,10 @@ export interface HSCode {
   level: number;
   chapter: string | null;
   heading: string | null;
+  us_avg_duty: number | null;
+  us_duty_range: string | null;
+  us_duty_notes: string | null;
+  us_fta_notes: string | null;
 }
 
 export interface Section {
