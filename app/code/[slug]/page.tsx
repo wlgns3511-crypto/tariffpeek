@@ -4,6 +4,7 @@ import { getCodeBySlug, getTopCodes, getChildCodes, getRelatedCodes, getSectionB
 import { formatHSCode, levelLabel } from "@/lib/format";
 import { breadcrumbSchema, faqSchema, datasetSchema } from "@/lib/schema";
 import { analyzeHSCode } from "@/lib/tariff-analysis";
+import { getRequiredDocs } from "@/lib/documents";
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -31,6 +32,7 @@ export default async function CodePage({ params }: Props) {
   const children = getChildCodes(code.hscode);
   const related = getRelatedCodes(code.hscode, 8);
   const analysis = analyzeHSCode(code, section);
+  const docs = code.chapter ? getRequiredDocs(code.chapter) : null;
 
   const breadcrumbs = [
     { name: "Home", url: "/" },
@@ -146,6 +148,72 @@ export default async function CodePage({ params }: Props) {
               <p className="text-slate-700 text-sm">{analysis.tradeNote}</p>
             </div>
           )}
+        </section>
+      )}
+
+      {/* Required Documents Checklist */}
+      {docs && (
+        <section className="mb-8">
+          <h2 className="text-xl font-bold mb-3">🇺🇸 US Import Document Checklist</h2>
+          <p className="text-sm text-slate-500 mb-4">Documents required when importing products under HS {formatHSCode(code.hscode)} into the United States.</p>
+
+          {/* Universal docs */}
+          <div className="mb-4">
+            <h3 className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wide">Required for All Imports</h3>
+            <div className="space-y-2">
+              {docs.universal.map((doc, i) => (
+                <details key={i} className="border border-slate-200 rounded-lg">
+                  <summary className="p-3 cursor-pointer hover:bg-slate-50 flex items-center gap-2">
+                    <span className="text-green-500">☑</span>
+                    <span className="font-medium text-sm">{doc.name}</span>
+                    <span className="text-xs text-slate-400 ml-auto">{doc.agency}</span>
+                  </summary>
+                  <div className="px-3 pb-3 text-sm text-slate-600 ml-7">{doc.description}</div>
+                </details>
+              ))}
+            </div>
+          </div>
+
+          {/* Chapter-specific docs */}
+          {docs.specific.length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold text-red-600 mb-2 uppercase tracking-wide">Product-Specific Requirements</h3>
+              <div className="space-y-2">
+                {docs.specific.map((doc, i) => (
+                  <details key={i} className="border border-red-200 rounded-lg bg-red-50/30" open={i === 0}>
+                    <summary className="p-3 cursor-pointer hover:bg-red-50 flex items-center gap-2">
+                      <span className={doc.required ? "text-red-500" : "text-amber-500"}>{doc.required ? "⚠️" : "📋"}</span>
+                      <span className="font-medium text-sm">{doc.name}</span>
+                      <span className="text-xs ml-auto">{doc.required ? <span className="text-red-600 font-medium">Required</span> : <span className="text-amber-600">May be required</span>}</span>
+                    </summary>
+                    <div className="px-3 pb-3 text-sm text-slate-600 ml-7">
+                      <p>{doc.description}</p>
+                      <p className="text-xs text-slate-400 mt-1">Agency: {doc.agency}</p>
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* FTA Certificates */}
+          {docs.ftaInfo.length > 0 && (
+            <div>
+              <h3 className="text-sm font-semibold text-green-600 mb-2 uppercase tracking-wide">FTA Certificate of Origin (for preferential rates)</h3>
+              <div className="space-y-1">
+                {docs.ftaInfo.map((fta, i) => (
+                  <div key={i} className="p-2 bg-green-50 rounded text-sm text-slate-700">
+                    <span className="text-green-600 mr-2">🤝</span>{fta}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <p className="text-xs text-slate-400 mt-4">
+            This checklist is for general guidance only. Actual requirements may vary based on specific product, country of origin, and current regulations.
+            Always consult with a licensed customs broker or the relevant agency for official requirements.
+          </p>
         </section>
       )}
 
