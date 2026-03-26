@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-const GA_ID = "G-XXXXXXXXXX"; // TODO: replace with actual GA ID
+const GA_ID = "G-3HEG4CXES8";
 const ADSENSE_ID = "ca-pub-5724806562146685";
 
 export const metadata: Metadata = {
