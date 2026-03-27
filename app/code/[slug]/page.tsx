@@ -6,6 +6,7 @@ import { breadcrumbSchema, faqSchema, datasetSchema } from "@/lib/schema";
 import { analyzeHSCode } from "@/lib/tariff-analysis";
 import { getRequiredDocs } from "@/lib/documents";
 import { DataFeedback } from "@/components/DataFeedback";
+import { EmbedButton } from "@/components/EmbedButton";
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -270,7 +271,9 @@ export default async function CodePage({ params }: Props) {
         ))}
       </section>
 
-      <DataFeedback />
+      <EmbedButton url="https://tariffpeek.com" title="Data from TariffPeek" site="TariffPeek" siteUrl="https://tariffpeek.com" />
+
+          <DataFeedback />
 
           <section className="mt-8 p-6 bg-orange-50 rounded-xl border border-orange-100">
         <h3 className="text-lg font-semibold text-orange-900 mb-3">Need Import/Export Assistance?</h3>
