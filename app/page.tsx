@@ -1,4 +1,4 @@
-import { getAllSections, getChapters, countCodes } from "@/lib/db";
+import { getAllSections, getChapters, countCodes, getAllCountries } from "@/lib/db";
 
 export default function HomePage() {
   const sections = getAllSections();
@@ -49,6 +49,23 @@ export default function HomePage() {
               <span className="text-sm text-slate-700 ml-2">{ch.description.substring(0, 50)}</span>
             </a>
           ))}
+        </div>
+      </section>
+
+      {/* Browse by Country */}
+      <section className="mb-10">
+        <h2 className="text-2xl font-bold mb-4">Import Tariff Rates by Country</h2>
+        <p className="text-sm text-slate-600 mb-4">Browse tariff rates for 20 major trading nations. Compare import duties, FTA benefits, and required documents.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {(() => {
+            let countries: { slug: string; name: string }[] = [];
+            try { countries = getAllCountries(); } catch { /* table may not exist yet */ }
+            return countries.map((c) => (
+              <a key={c.slug} href={`/import/${c.slug}`} className="p-3 bg-slate-50 rounded-lg text-sm hover:bg-indigo-50 hover:text-indigo-700 transition-colors text-center">
+                {c.name}
+              </a>
+            ));
+          })()}
         </div>
       </section>
 

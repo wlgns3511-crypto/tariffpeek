@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllCodes, getAllSections } from "@/lib/db";
+import { getAllCodes, getAllSections, getAllCountries, getCountryTariffSitemapEntries } from "@/lib/db";
 
 const BASE_URL = "https://tariffpeek.com";
 
@@ -28,5 +28,42 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...sectionPages, ...codePages];
+  // Country overview pages (20 countries)
+  let countries: { slug: string }[] = [];
+  try {
+    countries = getAllCountries();
+  } catch {
+    // Table may not exist yet during initial builds
+  }
+
+  const countryOverviewPages: MetadataRoute.Sitemap = countries.map((c) => ({
+    url: `${BASE_URL}/import/${c.slug}`,
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
+  // Country-specific tariff pages (limit to keep sitemap under 50,000)
+  // Reserve space for static + section + code pages
+  const existingCount = staticPages.length + sectionPages.length + codePages.length + countryOverviewPages.length;
+  const countryTariffLimit = Math.min(45000 - existingCount, 38000);
+
+  let countryTariffPages: MetadataRoute.Sitemap = [];
+  try {
+    const entries = getCountryTariffSitemapEntries(countryTariffLimit);
+    countryTariffPages = entries.map((e) => ({
+      url: `${BASE_URL}/import/${e.country_slug}/${e.code_slug}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    }));
+  } catch {
+    // Table may not exist yet during initial builds
+  }
+
+  return [
+    ...staticPages,
+    ...sectionPages,
+    ...codePages,
+    ...countryOverviewPages,
+    ...countryTariffPages,
+  ];
 }
