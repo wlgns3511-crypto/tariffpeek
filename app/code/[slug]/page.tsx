@@ -8,6 +8,7 @@ import { getRequiredDocs } from "@/lib/documents";
 import { DataFeedback } from "@/components/DataFeedback";
 import { EmbedButton } from "@/components/EmbedButton";
 import { FreshnessTag } from "@/components/FreshnessTag";
+import { LandedCostCalculator } from "@/components/LandedCostCalculator";
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -130,6 +131,11 @@ export default async function CodePage({ params }: Props) {
             Always verify with <a href="https://hts.usitc.gov" className="underline" target="_blank" rel="noopener">USITC</a> for official rates.
           </p>
         </section>
+      )}
+
+      {/* Landed Cost Calculator */}
+      {code.us_avg_duty !== null && (
+        <LandedCostCalculator defaultTariffRate={code.us_avg_duty} hsCode={formatHSCode(code.hscode)} />
       )}
 
       {/* Classification Tip */}

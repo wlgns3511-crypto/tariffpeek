@@ -8,9 +8,9 @@ export async function GET() {
   const items = codes
     .map((c) => `
     <item>
-      <title>HS ${c.code} - ${escapeXml(c.name)}</title>
+      <title>HS ${c.hscode} - ${escapeXml(c.description)}</title>
       <link>https://tariffpeek.com/code/${c.slug}</link>
-      <description>HS Code ${c.code}: ${escapeXml(c.description?.slice(0, 200) || c.name)}. Check US import tariff rates and required documents.</description>
+      <description>HS Code ${c.hscode}: ${escapeXml(c.description?.slice(0, 200))}. Check US import tariff rates and required documents.</description>
       <pubDate>${now}</pubDate>
       <guid isPermaLink="false">https://tariffpeek.com/code/${c.slug}#${Date.now()}</guid>
     </item>`)
