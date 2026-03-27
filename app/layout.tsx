@@ -63,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <a href="https://nameblooms.com" className="hover:text-blue-600">Baby Names</a>
                 <a href="https://vocabwize.com" className="hover:text-blue-600">Vocabulary</a>
                 <a href="https://calcpeek.com" className="hover:text-blue-600">Calculators</a>
-                <a href="https://tariffpeek.com" className="hover:text-blue-600">HS Codes <p>© {new Dateamp; Tariffs</a>
+                <a href="https://tariffpeek.com" className="hover:text-blue-600">HS Codes \&amp; Tariffs</a>
               </div>
             </div>
             <p>© {new Date().getFullYear()} TariffPeek. Data from UN Comtrade & WCO. Not legal advice.</p>
