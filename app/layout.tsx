@@ -8,7 +8,6 @@ export const metadata: Metadata = {
   title: { default: "TariffPeek — HS Code Lookup & Trade Classification", template: "%s | TariffPeek" },
   description: "Search and explore Harmonized System (HS) codes for international trade. Free HS code lookup, tariff classification guide, and trade data.",
   metadataBase: new URL("https://tariffpeek.com"),
-                <a href="https://ingredipeek.com" className="hover:text-blue-600">Food Allergens</a>
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -65,6 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <a href="https://vocabwize.com" className="hover:text-blue-600">Vocabulary</a>
                 <a href="https://calcpeek.com" className="hover:text-blue-600">Calculators</a>
                 <a href="https://tariffpeek.com" className="hover:text-blue-600">HS Codes \&amp; Tariffs</a>
+                <a href="https://ingredipeek.com" className="hover:text-blue-600">Food Allergens</a>
               </div>
             </div>
             <p>© {new Date().getFullYear()} TariffPeek. Data from UN Comtrade & WCO. Not legal advice.</p>

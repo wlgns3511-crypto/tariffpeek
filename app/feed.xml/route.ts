@@ -1,9 +1,9 @@
-import { db } from "@/lib/db";
+import { getAllCodes } from "@/lib/db";
 
 export async function GET() {
   const now = new Date().toUTCString();
-  
-  const codes = db.prepare("SELECT code, name, slug, description FROM hs_codes ORDER BY code LIMIT 15").all() as any[];
+
+  const codes = getAllCodes().slice(0, 15);
 
   const items = codes
     .map((c) => `
