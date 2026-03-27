@@ -269,6 +269,14 @@ export default async function CodePage({ params }: Props) {
         ))}
       </section>
 
+      <section className="mt-8 p-6 bg-orange-50 rounded-xl border border-orange-100">
+        <h3 className="text-lg font-semibold text-orange-900 mb-3">Need Import/Export Assistance?</h3>
+        <p className="text-orange-800 text-sm leading-relaxed">
+          Find licensed customs brokers and freight forwarding services for this HS code.
+          Compare trade compliance solutions, cargo insurance quotes, and international shipping rates to optimize your supply chain costs.
+        </p>
+      </section>
+
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema(breadcrumbs)) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(analysis.faqs)) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datasetSchema(`HS Code ${formatHSCode(code.hscode)}`, code.description)) }} />
