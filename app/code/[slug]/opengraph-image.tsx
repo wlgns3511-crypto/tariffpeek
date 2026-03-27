@@ -55,7 +55,6 @@ export default async function Image({ params }: { params: Promise<{ slug: string
 
         {/* Right: tariff rate card */}
         <div style={{ display: 'flex',
-          display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
