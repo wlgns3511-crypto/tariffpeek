@@ -51,6 +51,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <a href="https://guidebycity.com" className="hover:underline">GuidByCity</a>
               <a href="https://degreewize.com" className="hover:underline">DegreeWize</a>
             </div>
+            <div className="mt-4 pt-4 border-t border-slate-100">
+              <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">DataPeek Insights Network</p>
+              <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
+                <a href="https://salarybycity.com" className="hover:text-blue-600">Salaries</a>
+                <a href="https://costbycity.com" className="hover:text-blue-600">Cost of Living</a>
+                <a href="https://zippeek.com" className="hover:text-blue-600">ZIP Codes</a>
+                <a href="https://guidebycity.com" className="hover:text-blue-600">City Guides</a>
+                <a href="https://degreewize.com" className="hover:text-blue-600">Colleges</a>
+                <a href="https://caloriewize.com" className="hover:text-blue-600">Nutrition</a>
+                <a href="https://nameblooms.com" className="hover:text-blue-600">Baby Names</a>
+                <a href="https://vocabwize.com" className="hover:text-blue-600">Vocabulary</a>
+                <a href="https://calcpeek.com" className="hover:text-blue-600">Calculators</a>
+                <a href="https://tariffpeek.com" className="hover:text-blue-600">HS Codes <p>© {new Dateamp; Tariffs</a>
+              </div>
+            </div>
             <p>© {new Date().getFullYear()} TariffPeek. Data from UN Comtrade & WCO. Not legal advice.</p>
           </div>
         </footer>
