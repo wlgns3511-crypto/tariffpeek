@@ -7,6 +7,7 @@ import { analyzeHSCode } from "@/lib/tariff-analysis";
 import { getRequiredDocs } from "@/lib/documents";
 import { DataFeedback } from "@/components/DataFeedback";
 import { EmbedButton } from "@/components/EmbedButton";
+import { FreshnessTag } from "@/components/FreshnessTag";
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -271,7 +272,9 @@ export default async function CodePage({ params }: Props) {
         ))}
       </section>
 
-      <EmbedButton url="https://tariffpeek.com" title="Data from TariffPeek" site="TariffPeek" siteUrl="https://tariffpeek.com" />
+      <FreshnessTag source="UN Comtrade & USITC" />
+
+          <EmbedButton url="https://tariffpeek.com" title="Data from TariffPeek" site="TariffPeek" siteUrl="https://tariffpeek.com" />
 
           <DataFeedback />
 
