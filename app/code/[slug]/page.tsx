@@ -5,6 +5,7 @@ import { formatHSCode, levelLabel } from "@/lib/format";
 import { breadcrumbSchema, faqSchema, datasetSchema } from "@/lib/schema";
 import { analyzeHSCode } from "@/lib/tariff-analysis";
 import { getRequiredDocs } from "@/lib/documents";
+import { DataFeedback } from "@/components/DataFeedback";
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -269,7 +270,9 @@ export default async function CodePage({ params }: Props) {
         ))}
       </section>
 
-      <section className="mt-8 p-6 bg-orange-50 rounded-xl border border-orange-100">
+      <DataFeedback />
+
+          <section className="mt-8 p-6 bg-orange-50 rounded-xl border border-orange-100">
         <h3 className="text-lg font-semibold text-orange-900 mb-3">Need Import/Export Assistance?</h3>
         <p className="text-orange-800 text-sm leading-relaxed">
           Find licensed customs brokers and freight forwarding services for this HS code.
