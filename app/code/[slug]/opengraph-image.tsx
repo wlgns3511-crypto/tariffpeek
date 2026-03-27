@@ -16,7 +16,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   if (!code) {
     return new ImageResponse(
       <div style={{ display: 'flex', width: '100%', height: '100%', backgroundColor: '#ea580c', color: 'white', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif' }}>
-        <div style={{ fontSize: 48, fontWeight: 800 }}>TARIFFPEEK</div>
+        <div style={{ display: 'flex', fontSize: 48, fontWeight: 800 }}>TARIFFPEEK</div>
       </div>,
       { ...size }
     );
@@ -35,26 +35,26 @@ export default async function Image({ params }: { params: Promise<{ slug: string
         {/* Left: brand + code + description */}
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, marginRight: 40 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#ea580c', letterSpacing: 2 }}>
+            <div style={{ display: 'flex', fontSize: 18, fontWeight: 800, color: '#ea580c', letterSpacing: 2 }}>
               TARIFFPEEK
             </div>
-            <div style={{ width: 1, height: 20, backgroundColor: '#fed7aa' }} />
-            <div style={{ fontSize: 18, color: '#9a3412', fontWeight: 600 }}>
+            <div style={{ display: 'flex', width: 1, height: 20, backgroundColor: '#fed7aa' }} />
+            <div style={{ display: 'flex', fontSize: 18, color: '#9a3412', fontWeight: 600 }}>
               HS Code Lookup
             </div>
           </div>
 
-          <div style={{ fontSize: 52, fontWeight: 800, color: '#1c1917', letterSpacing: -1, marginBottom: 12 }}>
+          <div style={{ display: 'flex', fontSize: 52, fontWeight: 800, color: '#1c1917', letterSpacing: -1, marginBottom: 12 }}>
             HS {formattedCode}
           </div>
 
-          <div style={{ fontSize: 22, color: '#44403c', lineHeight: 1.4, maxWidth: 680 }}>
+          <div style={{ display: 'flex', fontSize: 22, color: '#44403c', lineHeight: 1.4, maxWidth: 680 }}>
             {description}
           </div>
         </div>
 
         {/* Right: tariff rate card */}
-        <div style={{
+        <div style={{ display: 'flex',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -64,19 +64,19 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           padding: '32px 40px',
           minWidth: 220,
         }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: hasRate ? '#ffedd5' : '#78716c', letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase' }}>
+          <div style={{ display: 'flex', fontSize: 14, fontWeight: 700, color: hasRate ? '#ffedd5' : '#78716c', letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase' }}>
             US Import Duty
           </div>
-          <div style={{ fontSize: 58, fontWeight: 800, color: hasRate ? '#ffffff' : '#57534e', lineHeight: 1 }}>
+          <div style={{ display: 'flex', fontSize: 58, fontWeight: 800, color: hasRate ? '#ffffff' : '#57534e', lineHeight: 1 }}>
             {hasRate ? `${code.us_avg_duty}%` : 'N/A'}
           </div>
           {code.us_duty_range && (
-            <div style={{ fontSize: 14, color: '#ffedd5', marginTop: 10, fontWeight: 500 }}>
+            <div style={{ display: 'flex', fontSize: 14, color: '#ffedd5', marginTop: 10, fontWeight: 500 }}>
               Range: {code.us_duty_range}
             </div>
           )}
           {!hasRate && (
-            <div style={{ fontSize: 13, color: '#78716c', marginTop: 8 }}>
+            <div style={{ display: 'flex', fontSize: 13, color: '#78716c', marginTop: 8 }}>
               No rate data
             </div>
           )}
@@ -88,10 +88,10 @@ export default async function Image({ params }: { params: Promise<{ slug: string
 
       {/* Footer */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontSize: 16, color: '#ea580c', fontWeight: 700 }}>
+        <div style={{ display: 'flex', fontSize: 16, color: '#ea580c', fontWeight: 700 }}>
           tariffpeek.com
         </div>
-        <div style={{ fontSize: 14, color: '#a8a29e' }}>
+        <div style={{ display: 'flex', fontSize: 14, color: '#a8a29e' }}>
           US MFN tariff rates · Always verify with USITC
         </div>
       </div>
