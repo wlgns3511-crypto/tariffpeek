@@ -18,6 +18,7 @@ interface Props {
 }
 
 export const dynamicParams = true;
+export const revalidate = 86400; // 24시간 ISR 캐시
 
 export async function generateStaticParams() {
   return getTopCountryTariffParams(50);
