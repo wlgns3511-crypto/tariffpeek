@@ -10,6 +10,7 @@ import {
   getAllCountries,
 } from "@/lib/db";
 import { formatHSCode, levelLabel } from "@/lib/format";
+import { AdSlot } from "@/components/AdSlot";
 import { breadcrumbSchema, faqSchema } from "@/lib/schema";
 import { getRequiredDocs } from "@/lib/documents";
 
@@ -207,6 +208,8 @@ export default async function CountryTariffPage({ params }: Props) {
           </table>
         </div>
       </section>
+
+      <AdSlot id="import-mid" />
 
       {/* Required Documents */}
       {docs && (

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getAllSections, getSectionById, getCodesBySection } from "@/lib/db";
 import { formatHSCode, levelLabel } from "@/lib/format";
+import { AdSlot } from "@/components/AdSlot";
 import { breadcrumbSchema } from "@/lib/schema";
 
 interface Props { params: Promise<{ id: string }> }
@@ -49,6 +50,8 @@ export default async function SectionPage({ params }: Props) {
           ))}
         </div>
       </section>
+
+      <AdSlot id="section-bottom" />
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema([
         { name: "Home", url: "/" },
