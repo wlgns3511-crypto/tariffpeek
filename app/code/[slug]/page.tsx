@@ -10,6 +10,7 @@ import { DataFeedback } from "@/components/DataFeedback";
 import { EmbedButton } from "@/components/EmbedButton";
 import { FreshnessTag } from "@/components/FreshnessTag";
 import { LandedCostCalculator } from "@/components/LandedCostCalculator";
+import { CiteButton } from "@/components/CiteButton";
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -281,6 +282,10 @@ export default async function CodePage({ params }: Props) {
       </section>
 
       <FreshnessTag source="UN Comtrade & USITC" />
+
+      <div className="flex items-center gap-4 mt-4">
+        <CiteButton title={`HS Code ${formatHSCode(code.hscode)} - ${code.description}`} url={`https://tariffpeek.com/code/${slug}`} source="TariffPeek (WCO Data)" />
+      </div>
 
           <EmbedButton url="https://tariffpeek.com" title="Data from TariffPeek" site="TariffPeek" siteUrl="https://tariffpeek.com" />
 
