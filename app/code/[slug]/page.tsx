@@ -260,13 +260,12 @@ export default async function CodePage({ params }: Props) {
         </section>
       )}
 
-      {/* Cross-site links */}
-      <section className="mb-8 bg-indigo-50 border border-indigo-100 rounded-lg p-5">
-        <h2 className="text-lg font-bold mb-3">Related Data</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-          <a href="https://salarybycity.com" className="text-indigo-700 hover:underline">Salary Data by City →</a>
-          <a href="https://costbycity.com" className="text-indigo-700 hover:underline">Cost of Living Data →</a>
-          <a href="https://calcpeek.com" className="text-indigo-700 hover:underline">Unit Converters →</a>
+      {/* Related Data Resources */}
+      <section className="mb-8 p-4 bg-slate-50 rounded-lg">
+        <h3 className="text-sm font-semibold text-slate-500 mb-2">Related Data Resources</h3>
+        <div className="flex flex-wrap gap-3 text-sm">
+          <a href="https://shipcalcwize.com" className="text-indigo-600 hover:underline">ShipCalcWize - Shipping cost calculator &rarr;</a>
+          <a href="https://calcpeek.com" className="text-indigo-600 hover:underline">CalcPeek - Unit converters &rarr;</a>
         </div>
       </section>
 
