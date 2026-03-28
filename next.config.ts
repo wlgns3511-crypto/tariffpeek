@@ -6,11 +6,7 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   serverExternalPackages: ["better-sqlite3"],
   outputFileTracingIncludes: {
-    "/api/**": ["./data/**"],
-    "/import/**": ["./data/**"],
-    "/code/**": ["./data/**"],
-    "/section/**": ["./data/**"],
-    "/search/**": ["./data/**"],
+    "/**": ["./data/**"],
   },
   async headers() {
     return [
