@@ -1,7 +1,22 @@
 import Database from 'better-sqlite3';
 import path from 'path';
+import fs from 'fs';
 
-const DB_PATH = path.join(process.cwd(), 'data', 'tariff.db');
+// Vercel serverless: process.cwd() 우선, 없으면 __dirname 기반 탐색
+function findDbPath(): string {
+  const candidates = [
+    path.join(process.cwd(), 'data', 'tariff.db'),
+    path.join(__dirname, '..', 'data', 'tariff.db'),
+    path.join(__dirname, '..', '..', 'data', 'tariff.db'),
+    path.join(__dirname, '..', '..', '..', 'data', 'tariff.db'),
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return p;
+  }
+  return candidates[0]; // fallback
+}
+
+const DB_PATH = findDbPath();
 let _db: Database.Database | null = null;
 
 function getDb(): Database.Database {
