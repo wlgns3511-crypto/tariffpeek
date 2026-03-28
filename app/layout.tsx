@@ -40,33 +40,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <a href="/terms" className="hover:underline">Terms</a>
               <a href="/contact" className="hover:underline">Contact</a>
             </div>
-            <div className="flex flex-wrap justify-center gap-3 mb-4 text-xs">
-              <a href="https://salarybycity.com" className="hover:underline">SalaryByCity</a>
-              <a href="https://costbycity.com" className="hover:underline">CostByCity</a>
-              <a href="https://zippeek.com" className="hover:underline">ZipPeek</a>
-              <a href="https://calcpeek.com" className="hover:underline">CalcPeek</a>
-              <a href="https://nameblooms.com" className="hover:underline">NameBlooms</a>
-              <a href="https://caloriewize.com" className="hover:underline">CalorieWize</a>
-              <a href="https://vocabwize.com" className="hover:underline">VocabWize</a>
-              <a href="https://guidebycity.com" className="hover:underline">GuidByCity</a>
-              <a href="https://degreewize.com" className="hover:underline">DegreeWize</a>
-            </div>
             <div className="mt-4 pt-4 border-t border-slate-100">
-              <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">DataPeek Insights Network</p>
-              <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
-                <a href="https://salarybycity.com" className="hover:text-blue-600">Salaries</a>
-                <a href="https://costbycity.com" className="hover:text-blue-600">Cost of Living</a>
-                <a href="https://zippeek.com" className="hover:text-blue-600">ZIP Codes</a>
-                <a href="https://guidebycity.com" className="hover:text-blue-600">City Guides</a>
-                <a href="https://degreewize.com" className="hover:text-blue-600">Colleges</a>
-                <a href="https://caloriewize.com" className="hover:text-blue-600">Nutrition</a>
-                <a href="https://nameblooms.com" className="hover:text-blue-600">Baby Names</a>
-                <a href="https://vocabwize.com" className="hover:text-blue-600">Vocabulary</a>
-                <a href="https://calcpeek.com" className="hover:text-blue-600">Calculators</a>
-                <a href="https://tariffpeek.com" className="hover:text-blue-600">HS Codes \&amp; Tariffs</a>
-                <a href="https://ingredipeek.com" className="hover:text-blue-600">Food Allergens</a>
-              
-                <a href="https://sunpowerpeek.com" className="hover:text-blue-600">Solar Power</a>
+              <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Related Resources</p>
+              <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs">
+                <a href="https://shipcalcwize.com" className="hover:text-indigo-600">Shipping</a>
+                <a href="https://calcpeek.com" className="hover:text-indigo-600">Calculators</a>
+                <a href="https://salarybycity.com" className="hover:text-indigo-600">Salaries</a>
               </div>
             </div>
             <p>© {new Date().getFullYear()} TariffPeek. Data from UN Comtrade & WCO. Not legal advice.</p>

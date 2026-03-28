@@ -5,6 +5,7 @@ import { formatHSCode, levelLabel } from "@/lib/format";
 import { breadcrumbSchema, faqSchema, datasetSchema } from "@/lib/schema";
 import { analyzeHSCode } from "@/lib/tariff-analysis";
 import { getRequiredDocs } from "@/lib/documents";
+import { AdSlot } from "@/components/AdSlot";
 import { DataFeedback } from "@/components/DataFeedback";
 import { EmbedButton } from "@/components/EmbedButton";
 import { FreshnessTag } from "@/components/FreshnessTag";
@@ -225,6 +226,8 @@ export default async function CodePage({ params }: Props) {
           </p>
         </section>
       )}
+
+      <AdSlot id="code-mid" />
 
       {/* Child Codes */}
       {children.length > 0 && (
