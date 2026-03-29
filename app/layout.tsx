@@ -47,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <a href="/" className="text-slate-600 hover:text-indigo-600">Home</a>
               <a href="/search" className="text-slate-600 hover:text-indigo-600">Search</a>
               <a href="/about" className="text-slate-600 hover:text-indigo-600">About</a>
+              <a href="/blog/" className="text-slate-600 hover:text-indigo-600">Guides</a>
               <a href="/es/" className="text-slate-600 hover:text-indigo-600 font-semibold">ES</a>
             </div>
           </nav>

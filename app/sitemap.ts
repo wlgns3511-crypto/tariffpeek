@@ -1,11 +1,13 @@
 import type { MetadataRoute } from "next";
-import { getAllCodes, getAllSections, getAllCountries, getCountryTariffSitemapEntries } from "@/lib/db";
+import { getAllCodes, getAllSections, getAllCountries, getCountryTariffSitemapEntries, getAllCodeComparisonSlugs } from "@/lib/db";
+import { getAllPosts } from "@/lib/blog";
 
 const BASE_URL = "https://tariffpeek.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const codes = getAllCodes();
   const sections = getAllSections();
+  const posts = getAllPosts();
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE_URL, changeFrequency: "monthly", priority: 1.0 },
@@ -59,11 +61,31 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Table may not exist yet during initial builds
   }
 
+  // Code comparison pages
+  let comparePages: MetadataRoute.Sitemap = [];
+  try {
+    comparePages = getAllCodeComparisonSlugs(600).map((c) => ({
+      url: `${BASE_URL}/compare/${c.slug}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    }));
+  } catch {
+    // Table may not exist yet
+  }
+
   return [
     ...staticPages,
+    { url: `${BASE_URL}/blog/`, changeFrequency: "weekly" as const, priority: 0.8 },
+    ...posts.map((p) => ({
+      url: `${BASE_URL}/blog/${p.slug}/`,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+      lastModified: p.updatedAt ?? p.publishedAt,
+    })),
     ...sectionPages,
     ...codePages,
     ...countryOverviewPages,
     ...countryTariffPages,
+    ...comparePages,
   ];
 }
