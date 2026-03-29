@@ -17,6 +17,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
         <script dangerouslySetInnerHTML={{ __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');` }} />
         <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_ID}`} crossOrigin="anonymous" />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "name": "TariffPeek",
+              "url": "https://tariffpeek.com",
+              "description": "Search and explore Harmonized System (HS) codes for international trade. Free HS code lookup, tariff classification guide, and trade data.",
+              "inLanguage": "en-US"
+            },
+            {
+              "@type": "Organization",
+              "name": "TariffPeek",
+              "url": "https://tariffpeek.com",
+              "description": "Search and explore Harmonized System (HS) codes for international trade. Free HS code lookup, tariff classification guide, and trade data.",
+              "sameAs": []
+            }
+          ]
+        }) }} />
       </head>
       <body className="bg-white text-slate-900 min-h-screen">
         <header className="border-b border-slate-200">
