@@ -195,6 +195,22 @@ export function getTopCountryTariffParams(topCodesLimit = 50): { country: string
   return params;
 }
 
+// --- Code comparison queries ---
+
+export interface CodeComparison {
+  slug: string;
+  code_a: string;
+  code_b: string;
+}
+
+export function getCodeComparisonBySlug(slug: string): CodeComparison | undefined {
+  return getDb().prepare("SELECT * FROM code_comparisons WHERE slug = ?").get(slug) as CodeComparison | undefined;
+}
+
+export function getAllCodeComparisonSlugs(limit = 50000): { slug: string }[] {
+  return getDb().prepare("SELECT slug FROM code_comparisons LIMIT ?").all(limit) as { slug: string }[];
+}
+
 export function countCountryTariffs(): number {
   const r = getDb().prepare('SELECT COUNT(*) as c FROM country_tariffs').get() as { c: number } | undefined;
   return r?.c ?? 0;
