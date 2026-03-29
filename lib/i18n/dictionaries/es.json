@@ -1,0 +1,18 @@
+{
+  "siteName": "TariffPeek",
+  "title": "B\u00fasqueda de C\u00f3digos HS y Clasificaci\u00f3n Arancelaria",
+  "description": "Busca y explora c\u00f3digos del Sistema Armonizado (HS) para comercio internacional.",
+  "tariff": "Arancel",
+  "hsCode": "C\u00f3digo HS",
+  "importDutyRate": "Tasa de Importaci\u00f3n",
+  "internationalTrade": "Comercio Internacional",
+  "classificationDetails": "Detalles de Clasificaci\u00f3n",
+  "usImportDuty": "Arancel de Importaci\u00f3n EE.UU.",
+  "avgDutyRate": "Tasa Arancelaria Promedio",
+  "classificationGuide": "Gu\u00eda de Clasificaci\u00f3n",
+  "subClassifications": "Sub-Clasificaciones",
+  "relatedCodes": "C\u00f3digos HS Relacionados",
+  "faq": "Preguntas Frecuentes",
+  "viewInEnglish": "English version",
+  "viewInSpanish": "Espa\u00f1ol"
+}

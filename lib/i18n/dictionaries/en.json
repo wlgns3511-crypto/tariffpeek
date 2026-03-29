@@ -1,0 +1,18 @@
+{
+  "siteName": "TariffPeek",
+  "title": "HS Code Lookup & Tariff Classification",
+  "description": "Search and explore Harmonized System (HS) codes for international trade.",
+  "tariff": "Tariff",
+  "hsCode": "HS Code",
+  "importDutyRate": "Import Duty Rate",
+  "internationalTrade": "International Trade",
+  "classificationDetails": "Classification Details",
+  "usImportDuty": "US Import Duty",
+  "avgDutyRate": "Average Duty Rate",
+  "classificationGuide": "Classification Guide",
+  "subClassifications": "Sub-Classifications",
+  "relatedCodes": "Related HS Codes",
+  "faq": "Frequently Asked Questions",
+  "viewInEnglish": "English version",
+  "viewInSpanish": "Espa\u00f1ol"
+}
