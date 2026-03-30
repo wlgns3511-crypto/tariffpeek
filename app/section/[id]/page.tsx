@@ -3,6 +3,10 @@ import type { Metadata } from "next";
 import { getAllSections, getSectionById, getCodesBySection } from "@/lib/db";
 import { formatHSCode, levelLabel } from "@/lib/format";
 import { AdSlot } from "@/components/AdSlot";
+import { EditorNote } from "@/components/EditorNote";
+import { DidYouKnow } from "@/components/DidYouKnow";
+import { DataSourceBadge } from "@/components/DataSourceBadge";
+import { CrossSiteLinks } from "@/components/CrossSiteLinks";
 import { breadcrumbSchema } from "@/lib/schema";
 
 interface Props { params: Promise<{ id: string }> }
@@ -38,6 +42,8 @@ export default async function SectionPage({ params }: Props) {
       <h1 className="text-3xl font-bold mb-2">Section {section.id}: {section.name}</h1>
       <p className="text-slate-600 mb-8">Chapters {section.chapter_range} of the Harmonized System</p>
 
+      <EditorNote note="Tariff rates and HS code classifications are updated regularly by the U.S. International Trade Commission. Always verify the latest schedule before making import decisions, as rates may change due to trade agreements or executive orders." />
+
       <section>
         <h2 className="text-xl font-bold mb-4">Chapters in This Section</h2>
         <div className="space-y-2">
@@ -51,12 +57,25 @@ export default async function SectionPage({ params }: Props) {
         </div>
       </section>
 
+      <DidYouKnow fact="The Harmonized System (HS) is maintained by the World Customs Organization and used by over 200 countries. It classifies more than 5,000 commodity groups, and about 98% of world trade is categorized using HS codes." />
+
       <AdSlot id="section-bottom" />
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema([
-        { name: "Home", url: "/" },
-        { name: `Section ${section.id}`, url: `/section/${id}` },
-      ])) }} />
+      <DataSourceBadge sources={[
+        { name: "USITC", url: "https://www.usitc.gov" },
+        { name: "CBP", url: "https://www.cbp.gov" },
+      ]} />
+
+      <CrossSiteLinks current="TariffPeek" />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        ...breadcrumbSchema([
+          { name: "Home", url: "/" },
+          { name: `Section ${section.id}`, url: `/section/${id}` },
+        ]),
+        dateModified: "2026-03-31",
+        author: { "@type": "Organization", name: "DataPeek" },
+      }) }} />
     </div>
   );
 }
