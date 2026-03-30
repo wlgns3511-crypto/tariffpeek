@@ -10,22 +10,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getAllPosts();
 
   const staticPages: MetadataRoute.Sitemap = [
-    { url: BASE_URL, changeFrequency: "monthly", priority: 1.0 },
-    { url: `${BASE_URL}/search`, changeFrequency: "monthly", priority: 0.9 },
-    { url: `${BASE_URL}/about`, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${BASE_URL}/privacy`, changeFrequency: "monthly", priority: 0.3 },
-    { url: `${BASE_URL}/terms`, changeFrequency: "monthly", priority: 0.3 },
-    { url: `${BASE_URL}/contact`, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${BASE_URL}/`, changeFrequency: "monthly", priority: 1.0 },
+    { url: `${BASE_URL}/search/`, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE_URL}/about/`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/privacy/`, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${BASE_URL}/terms/`, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${BASE_URL}/contact/`, changeFrequency: "monthly", priority: 0.3 },
   ];
 
   const sectionPages: MetadataRoute.Sitemap = sections.map((s) => ({
-    url: `${BASE_URL}/section/${s.id}`,
+    url: `${BASE_URL}/section/${s.id}/`,
     changeFrequency: "monthly" as const,
     priority: 0.8,
   }));
 
   const codePages: MetadataRoute.Sitemap = codes.map((c) => ({
-    url: `${BASE_URL}/code/${c.slug}`,
+    url: `${BASE_URL}/code/${c.slug}/`,
     changeFrequency: "monthly" as const,
     priority: 0.7,
   }));
@@ -39,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   const countryOverviewPages: MetadataRoute.Sitemap = countries.map((c) => ({
-    url: `${BASE_URL}/import/${c.slug}`,
+    url: `${BASE_URL}/import/${c.slug}/`,
     changeFrequency: "monthly" as const,
     priority: 0.8,
   }));
@@ -53,7 +53,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   try {
     const entries = getCountryTariffSitemapEntries(countryTariffLimit);
     countryTariffPages = entries.map((e) => ({
-      url: `${BASE_URL}/import/${e.country_slug}/${e.code_slug}`,
+      url: `${BASE_URL}/import/${e.country_slug}/${e.code_slug}/`,
       changeFrequency: "monthly" as const,
       priority: 0.6,
     }));
@@ -65,7 +65,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   let comparePages: MetadataRoute.Sitemap = [];
   try {
     comparePages = getAllCodeComparisonSlugs(600).map((c) => ({
-      url: `${BASE_URL}/compare/${c.slug}`,
+      url: `${BASE_URL}/compare/${c.slug}/`,
       changeFrequency: "monthly" as const,
       priority: 0.5,
     }));
@@ -73,7 +73,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Table may not exist yet
   }
 
-  return [
+  const entries: MetadataRoute.Sitemap = [
     ...staticPages,
     { url: `${BASE_URL}/blog/`, changeFrequency: "weekly" as const, priority: 0.8 },
     ...posts.map((p) => ({
@@ -88,4 +88,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...countryTariffPages,
     ...comparePages,
   ];
+
+  // Safety: Google limit is 50,000 URLs per sitemap
+  if (entries.length > 50000) {
+    return entries.slice(0, 50000);
+  }
+
+  return entries;
 }

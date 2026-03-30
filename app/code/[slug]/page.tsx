@@ -11,6 +11,7 @@ import { EmbedButton } from "@/components/EmbedButton";
 import { FreshnessTag } from "@/components/FreshnessTag";
 import { LandedCostCalculator } from "@/components/LandedCostCalculator";
 import { CiteButton } from "@/components/CiteButton";
+import { AuthorBox } from "@/components/AuthorBox";
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -23,8 +24,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const code = getCodeBySlug(slug);
   if (!code) return {};
   return {
-    title: `HS Code ${formatHSCode(code.hscode)} — ${code.description}`,
-    description: `HS Code ${formatHSCode(code.hscode)}: ${code.description}. Find classification details, related codes, and trade guidance for customs declaration.`,
+    title: `HS Code ${formatHSCode(code.hscode)} — ${code.description} | Import Duty Rate & Tariff Classification`,
+    description: `HS Code ${formatHSCode(code.hscode)}: ${code.description}. ${code.us_avg_duty ? `US duty rate: ${code.us_avg_duty}%.` : ''} Professional tariff classification lookup for importers, customs brokers, and freight forwarders. Free HS code search.`,
     alternates: { canonical: `/code/${slug}` },
   };
 }
@@ -298,6 +299,8 @@ export default async function CodePage({ params }: Props) {
           Compare trade compliance solutions, cargo insurance quotes, and international shipping rates to optimize your supply chain costs.
         </p>
       </section>
+
+      <AuthorBox />
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema(breadcrumbs)) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(analysis.faqs)) }} />
