@@ -46,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         }) }} />
       </head>
       <body className="bg-white text-slate-900 min-h-screen">
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-blue-600 focus:border focus:rounded">Skip to content</a>
         <header className="border-b border-slate-200">
           <nav className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
             <a href="/" className="text-xl font-bold text-indigo-700">
@@ -60,7 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </nav>
         </header>
-        <main className="max-w-5xl mx-auto px-4 py-8">{children}</main>
+        <main id="main-content" className="max-w-5xl mx-auto px-4 py-8">{children}</main>
         <footer className="border-t border-slate-200 mt-16">
           <div className="max-w-5xl mx-auto px-4 py-8 text-center text-sm text-slate-500">
             <div className="flex flex-wrap justify-center gap-4 mb-4">

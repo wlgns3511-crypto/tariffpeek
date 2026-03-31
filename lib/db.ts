@@ -195,6 +195,18 @@ export function getTopCountryTariffParams(topCodesLimit = 50): { country: string
   return params;
 }
 
+// --- Global averages for insights ---
+
+export function getGlobalAvgDuty(): number {
+  const row = getDb().prepare('SELECT AVG(us_avg_duty) as avg FROM codes WHERE us_avg_duty IS NOT NULL').get() as { avg: number };
+  return Math.round(row.avg * 10) / 10;
+}
+
+export function getChapterAvgDuty(chapter: string): number {
+  const row = getDb().prepare('SELECT AVG(us_avg_duty) as avg FROM codes WHERE chapter = ? AND us_avg_duty IS NOT NULL').get(chapter) as { avg: number };
+  return Math.round((row?.avg ?? 0) * 10) / 10;
+}
+
 // --- Code comparison queries ---
 
 export interface CodeComparison {

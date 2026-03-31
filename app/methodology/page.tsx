@@ -54,6 +54,11 @@ export default function MethodologyPage() {
         If you find inaccuracies or have suggestions for improvement, please 
         <a href="/contact">contact us</a>. We value community input in maintaining data quality.
       </p>
+    
+      <h2>Official Data Sources</h2>
+      <ul>
+        <li><a href="https://comtradeplus.un.org/" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">UN Comtrade</a></li>
+      </ul>
     </article>
   );
 }

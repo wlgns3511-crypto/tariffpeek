@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getCodeBySlug, getTopCodes, getChildCodes, getRelatedCodes, getSectionById } from "@/lib/db";
+import { getCodeBySlug, getTopCodes, getChildCodes, getRelatedCodes, getSectionById, getGlobalAvgDuty, getChapterAvgDuty, getAllCountryTariffsForCode } from "@/lib/db";
 import { formatHSCode, levelLabel } from "@/lib/format";
 import { breadcrumbSchema, faqSchema, datasetSchema } from "@/lib/schema";
 import { analyzeHSCode } from "@/lib/tariff-analysis";
@@ -69,6 +69,48 @@ export default async function CodePage({ params }: Props) {
           <p className="text-slate-700 text-sm">{analysis.summary}</p>
         </div>
       </section>
+
+      {/* Tariff Insights */}
+      {code.us_avg_duty !== null && (() => {
+        const globalAvg = getGlobalAvgDuty();
+        const chapterAvg = code.chapter ? getChapterAvgDuty(code.chapter) : globalAvg;
+        const dutyDiff = code.us_avg_duty - globalAvg;
+        const chapterDiff = code.us_avg_duty - chapterAvg;
+        const extraPer1000 = Math.round(code.us_avg_duty * 10);
+        return (
+          <section className="mb-8 bg-indigo-50 border border-indigo-200 rounded-xl p-5">
+            <h2 className="text-lg font-bold text-indigo-900 mb-3">Tariff Insights</h2>
+            <div className="grid sm:grid-cols-2 gap-4 text-sm">
+              <div className="flex items-start gap-2">
+                <span className="text-indigo-600 mt-0.5">{dutyDiff > 0 ? '▲' : '▼'}</span>
+                <p className="text-slate-700">
+                  Duty rate of <strong>{code.us_avg_duty}%</strong> is <strong className={dutyDiff > 0 ? 'text-red-700' : 'text-green-700'}>{Math.abs(dutyDiff).toFixed(1)}pp {dutyDiff > 0 ? 'above' : 'below'}</strong> the overall average tariff rate of {globalAvg}%.
+                </p>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-indigo-600 mt-0.5">$</span>
+                <p className="text-slate-700">
+                  Importing this item costs an extra <strong className="text-indigo-700">${extraPer1000} per $1,000</strong> of declared value in US customs duty.
+                </p>
+              </div>
+              {code.chapter && (
+                <div className="flex items-start gap-2">
+                  <span className="text-indigo-600 mt-0.5">{chapterDiff > 0 ? '▲' : '▼'}</span>
+                  <p className="text-slate-700">
+                    Within Chapter {code.chapter}, this rate is <strong className={chapterDiff > 0 ? 'text-red-700' : 'text-green-700'}>{Math.abs(chapterDiff).toFixed(1)}pp {chapterDiff > 0 ? 'above' : 'below'}</strong> the chapter average of {chapterAvg}%.
+                  </p>
+                </div>
+              )}
+              <div className="flex items-start gap-2">
+                <span className="text-indigo-600 mt-0.5">i</span>
+                <p className="text-slate-700">
+                  {code.us_fta_notes ? <span>FTA agreements may reduce or eliminate this duty. <strong className="text-green-700">Check FTA eligibility below.</strong></span> : <span>No special FTA preferences noted for this code. Standard MFN rates apply.</span>}
+                </p>
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* Code Details */}
       <section className="mb-8">
@@ -237,7 +279,7 @@ export default async function CodePage({ params }: Props) {
           <h2 className="text-xl font-bold mb-3">Sub-Classifications</h2>
           <div className="space-y-1">
             {children.map((ch) => (
-              <a key={ch.hscode} href={`/code/${ch.slug}`} className="flex items-center gap-3 p-3 border border-slate-100 rounded-lg hover:border-indigo-200 hover:bg-indigo-50 transition-colors">
+              <a key={ch.hscode} href={`/code/${ch.slug}/`} className="flex items-center gap-3 p-3 border border-slate-100 rounded-lg hover:border-indigo-200 hover:bg-indigo-50 transition-colors">
                 <span className="font-mono text-indigo-600 text-sm w-20">{formatHSCode(ch.hscode)}</span>
                 <span className="text-sm text-slate-700 flex-1">{ch.description}</span>
                 <span className="text-xs text-slate-400">{levelLabel(ch.level)}</span>
@@ -253,7 +295,7 @@ export default async function CodePage({ params }: Props) {
           <h2 className="text-xl font-bold mb-3">Related HS Codes</h2>
           <div className="grid sm:grid-cols-2 gap-2">
             {related.map((r) => (
-              <a key={r.hscode} href={`/code/${r.slug}`} className="p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+              <a key={r.hscode} href={`/code/${r.slug}/`} className="p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
                 <span className="font-mono text-indigo-600 text-sm">{formatHSCode(r.hscode)}</span>
                 <span className="text-sm text-slate-600 ml-2">{r.description.substring(0, 60)}</span>
               </a>
@@ -261,6 +303,51 @@ export default async function CodePage({ params }: Props) {
           </div>
         </section>
       )}
+
+      {/* Compare Tariff Rates */}
+      {related.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-xl font-bold mb-3">Compare Tariff Rates</h2>
+          <p className="text-sm text-slate-500 mb-3">See how HS {formatHSCode(code.hscode)} compares with related codes in the same chapter.</p>
+          <div className="flex flex-wrap gap-2">
+            {related.slice(0, 6).map((r) => {
+              const [a, b] = [code.slug, r.slug].sort();
+              return (
+                <a key={r.hscode} href={`/compare/${a}-vs-${b}/`}
+                  className="px-4 py-2 border border-indigo-200 rounded-full text-sm hover:bg-indigo-50 hover:border-indigo-400 text-indigo-700 font-medium transition-colors">
+                  {formatHSCode(code.hscode)} vs {formatHSCode(r.hscode)}
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Country Tariff Rates for This Code */}
+      {(() => {
+        const countryTariffs = getAllCountryTariffsForCode(code.hscode).slice(0, 8);
+        if (countryTariffs.length === 0) return null;
+        return (
+          <section className="mb-8">
+            <h2 className="text-xl font-bold mb-3">Import Duty by Country</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {countryTariffs.map(ct => (
+                <a key={ct.country_slug} href={`/import/${ct.country_slug}/${code.slug}/`}
+                  className="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-colors text-sm text-center">
+                  <span className="font-medium text-indigo-700">{ct.country_name}</span>
+                  <span className="block text-xs text-slate-500 mt-1">MFN: {ct.mfn_rate}%{ct.fta_rate != null ? ` / FTA: ${ct.fta_rate}%` : ''}</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        );
+      })()}
+
+      <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 my-6 text-sm">
+        <p className="text-slate-600">
+          <strong>Related:</strong> Shipping this item? Get rates at <a href="https://shipcalcwize.com" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">ShipCalcWize</a> for 15,000+ international routes.
+        </p>
+      </div>
 
       {/* Related Data Resources */}
       <section className="mb-8 p-4 bg-slate-50 rounded-lg">
