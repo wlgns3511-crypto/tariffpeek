@@ -11,7 +11,7 @@ const SITE_URL = "https://tariffpeek.com";
 interface Props { params: Promise<{ slug: string }> }
 
 export const dynamicParams = true;
-export const revalidate = 86400;
+export const revalidate = false;
 
 export async function generateStaticParams() {
   return getTopCodes(300).map((c) => ({ slug: c.slug }));

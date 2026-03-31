@@ -14,6 +14,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
+        <meta name="robots" content="index, follow, max-image-preview:large" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
         <script dangerouslySetInnerHTML={{ __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');` }} />
         <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_ID}`} crossOrigin="anonymous" />
@@ -59,6 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <a href="/about" className="hover:underline">About</a>
               <a href="/privacy" className="hover:underline">Privacy</a>
               <a href="/terms" className="hover:underline">Terms</a>
+              <a href="/disclaimer" className="hover:underline">Disclaimer</a>
               <a href="/contact" className="hover:underline">Contact</a>
             </div>
             <div className="mt-4 pt-4 border-t border-slate-100">
