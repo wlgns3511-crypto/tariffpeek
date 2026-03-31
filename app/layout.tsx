@@ -53,8 +53,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </a>
             <div className="flex gap-4 text-sm">
               <a href="/" className="text-slate-600 hover:text-indigo-600">Home</a>
-              <a href="/search" className="text-slate-600 hover:text-indigo-600">Search</a>
-              <a href="/about" className="text-slate-600 hover:text-indigo-600">About</a>
+              <a href="/search/" className="text-slate-600 hover:text-indigo-600">Search</a>
+              <a href="/about/" className="text-slate-600 hover:text-indigo-600">About</a>
               <a href="/blog/" className="text-slate-600 hover:text-indigo-600">Guides</a>
               <a href="/es/" className="text-slate-600 hover:text-indigo-600 font-semibold">ES</a>
             </div>
@@ -64,11 +64,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="border-t border-slate-200 mt-16">
           <div className="max-w-5xl mx-auto px-4 py-8 text-center text-sm text-slate-500">
             <div className="flex flex-wrap justify-center gap-4 mb-4">
-              <a href="/about" className="hover:underline">About</a>
-              <a href="/privacy" className="hover:underline">Privacy</a>
-              <a href="/terms" className="hover:underline">Terms</a>
-              <a href="/disclaimer" className="hover:underline">Disclaimer</a>
-              <a href="/contact" className="hover:underline">Contact</a>
+              <a href="/about/" className="hover:underline">About</a>
+              <a href="/privacy/" className="hover:underline">Privacy</a>
+              <a href="/terms/" className="hover:underline">Terms</a>
+              <a href="/disclaimer/" className="hover:underline">Disclaimer</a>
+              <a href="/contact/" className="hover:underline">Contact</a>
             </div>
             <div className="mt-4 pt-4 border-t border-slate-100">
               <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Related Resources</p>
