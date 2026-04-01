@@ -1,3 +1,7 @@
 {
-  "framework": "nextjs"
+  "functions": {
+    "app/**/*.tsx": {
+      "includeFiles": "data/**"
+    }
+  }
 }
