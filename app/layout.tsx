@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
   openGraph: { type: "website", siteName: "TariffPeek", url: "https://tariffpeek.com", locale: "en_US" },
   twitter: { card: "summary_large_image" },
+  other: { "google-adsense-account": "ca-pub-5724806562146685" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

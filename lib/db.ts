@@ -238,3 +238,24 @@ export function getCountryTariffSitemapEntries(limit = 45000): { country_slug: s
     LIMIT ?
   `).all(limit) as any[];
 }
+
+export function getCountryTariffSitemapCount(): number {
+  const r = getDb().prepare(`
+    SELECT COUNT(*) as c
+    FROM country_tariffs ct
+    JOIN codes c ON ct.hs_code = c.hscode
+    WHERE c.level >= 4
+  `).get() as { c: number } | undefined;
+  return r?.c ?? 0;
+}
+
+export function getCountryTariffSitemapPage(offset: number, limit: number): { country_slug: string; code_slug: string }[] {
+  return getDb().prepare(`
+    SELECT ct.country_slug, c.slug as code_slug
+    FROM country_tariffs ct
+    JOIN codes c ON ct.hs_code = c.hscode
+    WHERE c.level >= 4
+    ORDER BY ct.hs_code, ct.country_slug
+    LIMIT ? OFFSET ?
+  `).all(limit, offset) as any[];
+}
