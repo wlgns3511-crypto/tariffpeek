@@ -3,6 +3,7 @@ import { getAllSections, getChapters, countCodes, getAllCountries } from "@/lib/
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
+  openGraph: { url: "/" },
 };
 
 export default function HomePage() {

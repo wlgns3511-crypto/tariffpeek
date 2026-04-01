@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   description:
     "Expert guides on US tariffs, HTS codes, import duties, and trade policy. Learn how to classify imports, calculate landed costs, and navigate customs compliance.",
   alternates: { canonical: "/blog/" },
+  openGraph: { url: "/blog/" },
 };
 
 function formatDate(dateStr: string) {

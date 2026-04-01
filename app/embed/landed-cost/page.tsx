@@ -4,6 +4,7 @@ import { LandedCostCalculator } from "@/components/LandedCostCalculator";
 export const metadata: Metadata = {
   title: "Landed Cost Calculator - Embeddable Widget",
   robots: "noindex, nofollow",
+  openGraph: { url: "/embed/landed-cost/" },
 };
 
 export default function EmbedLandedCostPage() {
