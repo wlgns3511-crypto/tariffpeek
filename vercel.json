@@ -1,7 +1,3 @@
 {
-  "functions": {
-    "app/**/*.tsx": {
-      "includeFiles": "data/**"
-    }
-  }
+  "framework": "nextjs"
 }
