@@ -27,6 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `HS Code ${formatHSCode(code.hscode)} — ${code.description} | Import Duty Rate & Tariff Classification`,
     description: `HS Code ${formatHSCode(code.hscode)}: ${code.description}. ${code.us_avg_duty ? `US duty rate: ${code.us_avg_duty}%.` : ''} Professional tariff classification lookup for importers, customs brokers, and freight forwarders. Free HS code search.`,
     alternates: { canonical: `/code/${slug}` },
+    openGraph: { url: `/code/${slug}` },
   };
 }
 

@@ -8,9 +8,8 @@ export const metadata: Metadata = {
   title: { default: "TariffPeek — HS Code Lookup & Trade Classification", template: "%s | TariffPeek" },
   description: "Search and explore Harmonized System (HS) codes for international trade. Free HS code lookup, tariff classification guide, and trade data.",
   metadataBase: new URL("https://tariffpeek.com"),
-  alternates: { canonical: "/" },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
-  openGraph: { type: "website", siteName: "TariffPeek", url: "https://tariffpeek.com", locale: "en_US" },
+  openGraph: { type: "website", siteName: "TariffPeek", locale: "en_US" },
   twitter: { card: "summary_large_image" },
   other: { "google-adsense-account": "ca-pub-5724806562146685" },
 };

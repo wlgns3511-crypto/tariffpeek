@@ -25,6 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${a.description} vs ${b.description} - Tariff & Duty Rate Comparison`,
     description: `Compare tariff rates: ${a.description} (${a.us_avg_duty ?? 'N/A'}% duty) vs ${b.description} (${b.us_avg_duty ?? 'N/A'}% duty). HS Code ${a.hscode} vs ${b.hscode}.`,
     alternates: { canonical: `/compare/${slug}` },
+    openGraph: { url: `/compare/${slug}` },
   };
 }
 

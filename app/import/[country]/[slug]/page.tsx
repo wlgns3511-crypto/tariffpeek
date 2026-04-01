@@ -38,6 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${countryData.name} Import Tariff for HS ${formatHSCode(code.hscode)} — ${code.description}`,
     description: `Import duty rate for HS ${formatHSCode(code.hscode)} (${code.description}) into ${countryData.name}: MFN rate ${rate}. Compare tariff rates, FTA benefits, and required documents.`,
     alternates: { canonical: `/import/${country}/${slug}` },
+    openGraph: { url: `/import/${country}/${slug}` },
   };
 }
 

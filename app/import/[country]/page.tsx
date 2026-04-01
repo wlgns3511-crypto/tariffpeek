@@ -28,6 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${countryData.name} Import Tariff Rates — Duty Rates by HS Code`,
     description: `Complete guide to ${countryData.name} import tariff rates. Browse duty rates by HS code, FTA benefits, average tariffs by product category, and import requirements.`,
     alternates: { canonical: `/import/${country}` },
+    openGraph: { url: `/import/${country}` },
   };
 }
 

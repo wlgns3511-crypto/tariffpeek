@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `Section ${section.id} — ${section.name}`,
     description: `HS Code Section ${section.id}: ${section.name}. Covers chapters ${section.chapter_range}. Browse all chapter codes and classifications.`,
     alternates: { canonical: `/section/${id}` },
+    openGraph: { url: `/section/${id}` },
   };
 }
 
