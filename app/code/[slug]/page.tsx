@@ -15,17 +15,22 @@ import { AuthorBox } from "@/components/AuthorBox";
 
 interface Props { params: Promise<{ slug: string }> }
 
+function hsCodeFromSlug(slug: string): string | null {
+  return slug.match(/^(\d{2,10})/)?.[1] ?? null;
+}
+
 export async function generateStaticParams() {
   return getTopCodes(3000).map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const code = getCodeBySlug(slug);
-  if (!code) return {};
+  const hsCode = hsCodeFromSlug(slug);
+  const formattedHsCode = hsCode ? formatHSCode(hsCode) : slug;
+  const description = `Lookup tariff classification, customs notes, and import duty benchmarks for HS ${formattedHsCode}.`;
   return {
-    title: `HS Code ${formatHSCode(code.hscode)} — ${code.description} | Import Duty Rate & Tariff Classification`,
-    description: `HS Code ${formatHSCode(code.hscode)}: ${code.description}. ${code.us_avg_duty ? `US duty rate: ${code.us_avg_duty}%.` : ''} Professional tariff classification lookup for importers, customs brokers, and freight forwarders. Free HS code search.`,
+    title: `HS Code ${formattedHsCode} — Import Duty Rate & Tariff Classification`,
+    description,
     alternates: { canonical: `/code/${slug}` },
     openGraph: { url: `/code/${slug}` },
   };

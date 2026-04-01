@@ -4,6 +4,7 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { gunzipSync } from 'zlib';
 
 let _db: Database.Database | null = null;
+let hasLoggedSqliteUnavailable = false;
 
 function resolveDbPath(): string {
   const local = path.join(process.cwd(), 'data', 'tariff.db');
@@ -35,7 +36,11 @@ function withDb<T>(fallback: T, fn: (db: Database.Database) => T): T {
   try {
     return fn(getDb());
   } catch (error) {
-    console.error("[tariff-peek] SQLite unavailable", error);
+    const code = (error as { code?: string } | undefined)?.code;
+    if (code !== "SQLITE_CANTOPEN" || !hasLoggedSqliteUnavailable) {
+      console.error("[tariff-peek] SQLite unavailable", error);
+      if (code === "SQLITE_CANTOPEN") hasLoggedSqliteUnavailable = true;
+    }
     return fallback;
   }
 }

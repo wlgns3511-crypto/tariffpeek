@@ -18,6 +18,14 @@ interface Props {
   params: Promise<{ country: string; slug: string }>;
 }
 
+function readableCountry(country: string): string {
+  return decodeURIComponent(country).split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+}
+
+function hsCodeFromSlug(slug: string): string | null {
+  return slug.match(/^(\d{2,10})/)?.[1] ?? null;
+}
+
 export const dynamicParams = true;
 export const revalidate = false; // 24시간 ISR 캐시
 
@@ -27,16 +35,14 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { country, slug } = await params;
-  const countryData = getCountryBySlug(country);
-  const code = getCodeBySlug(slug);
-  if (!countryData || !code) return {};
-
-  const tariff = getCountryTariffBySlug(country, slug);
-  const rate = tariff ? `${tariff.mfn_rate}%` : "N/A";
+  const countryName = readableCountry(country);
+  const hsCode = hsCodeFromSlug(slug);
+  const formattedHsCode = hsCode ? formatHSCode(hsCode) : slug;
+  const description = `Lookup import duty, tariff notes, and trade documentation for HS ${formattedHsCode} in ${countryName}.`;
 
   return {
-    title: `${countryData.name} Import Tariff for HS ${formatHSCode(code.hscode)} — ${code.description}`,
-    description: `Import duty rate for HS ${formatHSCode(code.hscode)} (${code.description}) into ${countryData.name}: MFN rate ${rate}. Compare tariff rates, FTA benefits, and required documents.`,
+    title: `${countryName} Import Tariff for HS ${formattedHsCode} — Tariff Lookup`,
+    description,
     alternates: { canonical: `/import/${country}/${slug}` },
     openGraph: { url: `/import/${country}/${slug}` },
   };
