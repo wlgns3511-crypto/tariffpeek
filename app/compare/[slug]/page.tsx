@@ -7,11 +7,11 @@ import { FreshnessTag } from "@/components/FreshnessTag";
 
 interface Props { params: Promise<{ slug: string }> }
 
-export const dynamicParams = true;
+export const dynamicParams = false;
 export const revalidate = false;
 
 export async function generateStaticParams() {
-  return getAllCodeComparisonSlugs(500).map((c) => ({ slug: c.slug }));
+  return getAllCodeComparisonSlugs(600).map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
