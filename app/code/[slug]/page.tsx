@@ -19,6 +19,8 @@ function hsCodeFromSlug(slug: string): string | null {
   return slug.match(/^(\d{2,10})/)?.[1] ?? null;
 }
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return getTopCodes(3000).map((c) => ({ slug: c.slug }));
 }

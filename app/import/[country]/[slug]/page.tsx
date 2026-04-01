@@ -26,7 +26,7 @@ function hsCodeFromSlug(slug: string): string | null {
   return slug.match(/^(\d{2,10})/)?.[1] ?? null;
 }
 
-export const dynamicParams = true;
+export const dynamicParams = false;
 export const revalidate = false; // 24시간 ISR 캐시
 
 export async function generateStaticParams() {

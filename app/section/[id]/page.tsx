@@ -11,6 +11,8 @@ import { breadcrumbSchema } from "@/lib/schema";
 
 interface Props { params: Promise<{ id: string }> }
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return getAllSections().map((s) => ({ id: s.id }));
 }
