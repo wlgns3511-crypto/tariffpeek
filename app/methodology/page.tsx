@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Our Methodology",
   description: "Learn how TariffPeek collects, processes, and verifies import tariff rates and trade agreement data.",
+  alternates: { canonical: "/methodology/" },
 };
 
 export default function MethodologyPage() {

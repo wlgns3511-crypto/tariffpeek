@@ -1,4 +1,9 @@
+import type { Metadata } from "next";
 import { getAllSections, getChapters, countCodes, getAllCountries } from "@/lib/db";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default function HomePage() {
   const sections = getAllSections();

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "About TariffPeek",
   description: "Learn about TariffPeek, our mission, and data sources for HS code lookup and trade classification.",
+  alternates: { canonical: "/about/" },
 };
 
 export default function AboutPage() {

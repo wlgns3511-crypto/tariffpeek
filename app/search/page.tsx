@@ -5,6 +5,7 @@ import { formatHSCode, levelLabel } from "@/lib/format";
 export const metadata: Metadata = {
   title: "Search HS Codes",
   description: "Search the Harmonized System database. Find HS codes by product name or code number for customs classification.",
+  alternates: { canonical: "/search/" },
 };
 
 export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
