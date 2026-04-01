@@ -8,6 +8,10 @@ export const metadata: Metadata = {
   title: { default: "TariffPeek — HS Code Lookup & Trade Classification", template: "%s | TariffPeek" },
   description: "Search and explore Harmonized System (HS) codes for international trade. Free HS code lookup, tariff classification guide, and trade data.",
   metadataBase: new URL("https://tariffpeek.com"),
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
+  openGraph: { type: "website", siteName: "TariffPeek", url: "https://tariffpeek.com", locale: "en_US" },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -40,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "name": "TariffPeek",
               "url": "https://tariffpeek.com",
               "description": "Search and explore Harmonized System (HS) codes for international trade. Free HS code lookup, tariff classification guide, and trade data.",
-              "sameAs": ["https://vocabwize.com", "https://vocablibre.com", "https://wortwize.com", "https://kalimawize.com", "https://dicionariowize.com", "https://kotobapeek.com", "https://salarybycity.com", "https://netpaypeek.com", "https://wagepeek.com", "https://costbycity.com", "https://fairrentwize.com", "https://propertytaxpeek.com", "https://degreewize.com", "https://nameblooms.com", "https://myschoolpeek.com", "https://medcheckwize.com", "https://medcostpeek.com", "https://eldercarepeek.com", "https://ingredipeek.com", "https://caloriewize.com", "https://powerbillpeek.com", "https://sunpowerpeek.com", "https://shipcalcwize.com", "https://visapeek.com", "https://zippeek.com", "https://calcpeek.com", "https://datapeekfacts.com", "https://guidebycity.com"]
+              "sameAs": ["https://vocabwize.com", "https://vocablibre.com", "https://wortwize.com", "https://kalimawize.com", "https://dicionariowize.com", "https://kotobapeek.com", "https://salarybycity.com", "https://netpaypeek.com", "https://wagepeek.com", "https://costbycity.com", "https://fairrentwize.com", "https://propertytaxpeek.com", "https://degreewize.com", "https://nameblooms.com", "https://myschoolpeek.com", "https://medcheckwize.com", "https://medcostpeek.com", "https://eldercarepeek.com", "https://ingredipeek.com", "https://caloriewize.com", "https://powerbillpeek.com", "https://sunpowerpeek.com", "https://shipcalcwize.com", "https://visapeek.com", "https://zippeek.com", "https://calcpeek.com", "https://datapeekfacts.com", "https://guidebycity.com", "https://homepricepeek.com", "https://safecitypeek.com"]
             }
           ]
         }) }} />
