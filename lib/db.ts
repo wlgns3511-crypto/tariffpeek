@@ -227,6 +227,16 @@ export function getTopCountryTariffParams(topCodesLimit = 50): { country: string
   });
 }
 
+// --- Ranking helpers for InsightCards ---
+
+export function getDutyRank(duty: number): { rank: number; total: number } {
+  return withDb({ rank: 0, total: 0 }, (db) => {
+    const total = (db.prepare('SELECT COUNT(*) as c FROM codes WHERE us_avg_duty IS NOT NULL AND level >= 4').get() as { c: number }).c;
+    const rank = (db.prepare('SELECT COUNT(*) as c FROM codes WHERE us_avg_duty IS NOT NULL AND level >= 4 AND us_avg_duty > ?').get(duty) as { c: number }).c + 1;
+    return { rank, total };
+  });
+}
+
 // --- Global averages for insights ---
 
 export function getGlobalAvgDuty(): number {

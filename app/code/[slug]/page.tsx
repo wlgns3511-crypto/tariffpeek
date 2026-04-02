@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getCodeBySlug, getTopCodes, getChildCodes, getRelatedCodes, getSectionById, getGlobalAvgDuty, getChapterAvgDuty, getAllCountryTariffsForCode } from "@/lib/db";
+import { getCodeBySlug, getTopCodes, getChildCodes, getRelatedCodes, getSectionById, getGlobalAvgDuty, getChapterAvgDuty, getDutyRank, getAllCountryTariffsForCode } from "@/lib/db";
+import { InsightCards } from "@/components/InsightCards";
 import { formatHSCode, levelLabel } from "@/lib/format";
 import { breadcrumbSchema, faqSchema, datasetSchema } from "@/lib/schema";
 import { analyzeHSCode } from "@/lib/tariff-analysis";
@@ -82,41 +83,17 @@ export default async function CodePage({ params }: Props) {
       {code.us_avg_duty !== null && (() => {
         const globalAvg = getGlobalAvgDuty();
         const chapterAvg = code.chapter ? getChapterAvgDuty(code.chapter) : globalAvg;
-        const dutyDiff = code.us_avg_duty - globalAvg;
-        const chapterDiff = code.us_avg_duty - chapterAvg;
-        const extraPer1000 = Math.round(code.us_avg_duty * 10);
+        const { rank, total } = getDutyRank(code.us_avg_duty);
         return (
-          <section className="mb-8 bg-indigo-50 border border-indigo-200 rounded-xl p-5">
-            <h2 className="text-lg font-bold text-indigo-900 mb-3">Tariff Insights</h2>
-            <div className="grid sm:grid-cols-2 gap-4 text-sm">
-              <div className="flex items-start gap-2">
-                <span className="text-indigo-600 mt-0.5">{dutyDiff > 0 ? '▲' : '▼'}</span>
-                <p className="text-slate-700">
-                  Duty rate of <strong>{code.us_avg_duty}%</strong> is <strong className={dutyDiff > 0 ? 'text-red-700' : 'text-green-700'}>{Math.abs(dutyDiff).toFixed(1)}pp {dutyDiff > 0 ? 'above' : 'below'}</strong> the overall average tariff rate of {globalAvg}%.
-                </p>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-indigo-600 mt-0.5">$</span>
-                <p className="text-slate-700">
-                  Importing this item costs an extra <strong className="text-indigo-700">${extraPer1000} per $1,000</strong> of declared value in US customs duty.
-                </p>
-              </div>
-              {code.chapter && (
-                <div className="flex items-start gap-2">
-                  <span className="text-indigo-600 mt-0.5">{chapterDiff > 0 ? '▲' : '▼'}</span>
-                  <p className="text-slate-700">
-                    Within Chapter {code.chapter}, this rate is <strong className={chapterDiff > 0 ? 'text-red-700' : 'text-green-700'}>{Math.abs(chapterDiff).toFixed(1)}pp {chapterDiff > 0 ? 'above' : 'below'}</strong> the chapter average of {chapterAvg}%.
-                  </p>
-                </div>
-              )}
-              <div className="flex items-start gap-2">
-                <span className="text-indigo-600 mt-0.5">i</span>
-                <p className="text-slate-700">
-                  {code.us_fta_notes ? <span>FTA agreements may reduce or eliminate this duty. <strong className="text-green-700">Check FTA eligibility below.</strong></span> : <span>No special FTA preferences noted for this code. Standard MFN rates apply.</span>}
-                </p>
-              </div>
-            </div>
-          </section>
+          <InsightCards
+            dutyRate={code.us_avg_duty}
+            globalAvg={globalAvg}
+            chapterAvg={chapterAvg}
+            chapter={code.chapter}
+            rank={rank}
+            total={total}
+            hasFta={!!code.us_fta_notes}
+          />
         );
       })()}
 
