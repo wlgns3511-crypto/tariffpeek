@@ -30,7 +30,7 @@ export const dynamicParams = false;
 export const revalidate = false;
 
 export async function generateStaticParams() {
-  return getTopCountryTariffParams(50);
+  return getTopCountryTariffParams(200);
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
