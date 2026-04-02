@@ -27,7 +27,7 @@ function hsCodeFromSlug(slug: string): string | null {
 }
 
 export const dynamicParams = false;
-export const revalidate = false; // 24시간 ISR 캐시
+export const revalidate = false;
 
 export async function generateStaticParams() {
   return getTopCountryTariffParams(50);
