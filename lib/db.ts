@@ -237,6 +237,19 @@ export function getDutyRank(duty: number): { rank: number; total: number } {
   });
 }
 
+// Peer HS codes with one higher / one lower duty rate. Used for metadata peer comparisons.
+export function getDutyPeers(duty: number, excludeHsCode: string): { above?: HSCode; below?: HSCode } {
+  return withDb({} as { above?: HSCode; below?: HSCode }, (db) => {
+    const above = db.prepare(
+      'SELECT * FROM codes WHERE us_avg_duty IS NOT NULL AND level >= 4 AND us_avg_duty > ? AND hscode != ? ORDER BY us_avg_duty ASC LIMIT 1'
+    ).get(duty, excludeHsCode) as HSCode | undefined;
+    const below = db.prepare(
+      'SELECT * FROM codes WHERE us_avg_duty IS NOT NULL AND level >= 4 AND us_avg_duty < ? AND hscode != ? ORDER BY us_avg_duty DESC LIMIT 1'
+    ).get(duty, excludeHsCode) as HSCode | undefined;
+    return { above, below };
+  });
+}
+
 // --- Global averages for insights ---
 
 export function getGlobalAvgDuty(): number {

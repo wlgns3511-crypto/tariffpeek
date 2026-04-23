@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Our Methodology",
-  description: "Learn how TariffPeek collects, processes, and verifies import tariff rates and trade agreement data.",
+  title: "Our Methodology — How TariffPeek Builds Its HS Code Data",
+  description:
+    "How TariffPeek sources tariff classification and import duty data — anchored in the WCO Harmonized System, US International Trade Commission HTS, CBP CROSS rulings, and USTR free trade agreement texts.",
   alternates: { canonical: "/methodology/" },
   openGraph: { url: "/methodology/" },
 };
@@ -12,55 +13,192 @@ export default function MethodologyPage() {
     <article className="prose prose-slate max-w-3xl mx-auto">
       <h1>Our Methodology</h1>
       <p className="lead text-lg text-slate-600">
-        TariffPeek is committed to providing accurate, comprehensive, and up-to-date data.
-        This page explains how we collect, process, and verify our information.
+        Tariff classification drives a real money outcome on every
+        international shipment. You deserve to know exactly where our
+        HS code data comes from, and what only an official binding
+        ruling can tell you about a specific product.
       </p>
 
-      <h2>Data Sources</h2>
+      <div className="not-prose border-l-4 border-amber-400 bg-amber-50 p-4 my-4 rounded-r">
+        <p className="text-sm text-amber-900">
+          <strong>Important disclosure.</strong> TariffPeek is an
+          informational reference. For any actual import decision,
+          you must verify the 10-digit HTS code on the official{" "}
+          <a
+            href="https://hts.usitc.gov/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            USITC Harmonized Tariff Schedule
+          </a>{" "}
+          and request a binding ruling from CBP via{" "}
+          <a
+            href="https://rulings.cbp.gov/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            CROSS
+          </a>{" "}
+          for any borderline classification.
+        </p>
+      </div>
+
+      <h2>Primary source: WCO Harmonized System</h2>
       <p>
-        Our data is sourced from authoritative, publicly available databases including: <strong>USITC Harmonized Tariff Schedule, WTO Tariff Data</strong>.
-        We cross-reference multiple sources to ensure accuracy and completeness.
+        Every HS code on TariffPeek is anchored in the{" "}
+        <a
+          href="https://www.wcoomd.org/en/topics/nomenclature/overview.aspx"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          World Customs Organization (WCO) Harmonized System
+        </a>
+        . The HS is a 6-digit nomenclature used by 200+ countries.
+        The current edition is HS 2022. The United States extends to
+        10 digits as the{" "}
+        <a
+          href="https://hts.usitc.gov/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Harmonized Tariff Schedule (HTS)
+        </a>
+        , maintained by the US International Trade Commission. The
+        HTS is the legal US tariff schedule.
       </p>
 
-      <h2>Data Collection Process</h2>
-      <ol>
-        <li><strong>Automated Ingestion</strong> &mdash; We use automated pipelines to regularly pull data from our primary sources, ensuring freshness and consistency.</li>
-        <li><strong>Normalization</strong> &mdash; Raw data is cleaned, standardized, and structured into our unified database schema for easy comparison and analysis.</li>
-        <li><strong>Cross-Validation</strong> &mdash; We compare data points across multiple sources to identify and resolve discrepancies.</li>
-        <li><strong>Expert Review</strong> &mdash; Our editorial team reviews flagged entries and applies domain expertise to ensure quality.</li>
-      </ol>
-
-      <h2>Update Frequency</h2>
-      <p>
-        Our databases are updated <strong>monthly</strong> to reflect the latest available information.
-        Each page displays a verification timestamp showing when the data was last confirmed.
-      </p>
-
-      <h2>Quality Assurance</h2>
+      <h2>What we publish per HS code</h2>
       <ul>
-        <li>Automated integrity checks run daily to detect anomalies</li>
-        <li>User feedback is actively monitored and incorporated</li>
-        <li>All data transformations are logged and auditable</li>
-        <li>We maintain version history for all critical datasets</li>
+        <li>
+          <strong>HS code (6-digit international)</strong>
+        </li>
+        <li>
+          <strong>HTS code (10-digit US extension)</strong> where
+          applicable.
+        </li>
+        <li>
+          <strong>Description</strong> &mdash; the official WCO/HTS
+          description.
+        </li>
+        <li>
+          <strong>Section and chapter</strong>
+        </li>
+        <li>
+          <strong>US average duty rate</strong> &mdash; the
+          most-favored-nation (MFN) duty rate for the 10-digit HTS,
+          before any trade preferences or special tariffs.
+        </li>
+        <li>
+          <strong>FTA notes</strong> &mdash; whether US FTAs provide
+          preferential rates for qualifying origins.
+        </li>
       </ul>
 
-      <h2>Limitations</h2>
+      <h2>Cross-reference and verification</h2>
+      <ul>
+        <li>
+          <a
+            href="https://www.wcoomd.org/en/topics/nomenclature/overview.aspx"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            WCO Harmonized System
+          </a>{" "}
+          &mdash; the international primary source.
+        </li>
+        <li>
+          <a
+            href="https://hts.usitc.gov/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            USITC HTS Search
+          </a>{" "}
+          &mdash; the official US legal tariff schedule.
+        </li>
+        <li>
+          <a
+            href="https://rulings.cbp.gov/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            CBP CROSS Rulings
+          </a>{" "}
+          &mdash; CBP&apos;s database of binding classification
+          rulings.
+        </li>
+        <li>
+          <a
+            href="https://ustr.gov/trade-agreements/free-trade-agreements"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            USTR Free Trade Agreements
+          </a>{" "}
+          &mdash; official FTA texts and qualification rules.
+        </li>
+        <li>
+          <a
+            href="https://usatrade.census.gov/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Census USA Trade Online
+          </a>{" "}
+          &mdash; US import/export trade statistics by HS code.
+        </li>
+      </ul>
+
+      <h2>Update frequency</h2>
       <p>
-        While we strive for accuracy, our data reflects the most recent publicly available information
-        and may not capture real-time changes. We encourage users to verify critical data points
-        with primary sources for important decisions.
+        WCO HS updates every 5 years. The US HTS updates annually
+        plus periodic revisions for trade actions. CBP CROSS rulings
+        update continuously. We refresh our combined dataset monthly.
       </p>
 
-      <h2>Contact</h2>
-      <p>
-        If you find inaccuracies or have suggestions for improvement, please 
-        <a href="/contact">contact us</a>. We value community input in maintaining data quality.
-      </p>
-    
-      <h2>Official Data Sources</h2>
+      <h2>Limitations you should know about</h2>
       <ul>
-        <li><a href="https://comtradeplus.un.org/" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">UN Comtrade</a></li>
+        <li>
+          <strong>10-digit HTS only is legal.</strong> The duty rate
+          that actually applies to your shipment is the 10-digit
+          HTS, not the 6-digit international HS.
+        </li>
+        <li>
+          <strong>No real-time Section 301 tracking.</strong> US
+          tariffs against China and other countries change with
+          policy. Always check the current USTR Section 301 lists.
+        </li>
+        <li>
+          <strong>No antidumping/countervailing duties.</strong>
+          AD/CVD orders are product- and origin-specific and apply
+          on top of MFN duties. Check the ITA AD/CVD database.
+        </li>
+        <li>
+          <strong>Borderline classifications.</strong> For products
+          where multiple HS codes could apply, request a binding
+          CROSS ruling.
+        </li>
+        <li>
+          <strong>Not customs or legal advice.</strong> For shipments
+          with real money on the line, work with a licensed customs
+          broker.
+        </li>
       </ul>
+
+      <h2>Corrections and feedback</h2>
+      <p>
+        If a published WCO or USITC figure disagrees with what you
+        see here, please <a href="/contact">contact us</a> with the
+        HS code and the source URL.
+      </p>
+
+      <p className="text-sm text-slate-500 border-t pt-4 mt-8">
+        This methodology page was last reviewed in March 2026. Material
+        changes to how we source or compute the data will be reflected
+        here before they reach production pages.
+      </p>
     </article>
   );
 }

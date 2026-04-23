@@ -11,7 +11,8 @@ import { breadcrumbSchema } from "@/lib/schema";
 
 interface Props { params: Promise<{ id: string }> }
 
-export const dynamicParams = false;
+export const dynamicParams = true;
+export const revalidate = 86400;
 
 export async function generateStaticParams() {
   return getAllSections().map((s) => ({ id: s.id }));
@@ -24,8 +25,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `Section ${section.id} — ${section.name}`,
     description: `HS Code Section ${section.id}: ${section.name}. Covers chapters ${section.chapter_range}. Browse all chapter codes and classifications.`,
-    alternates: { canonical: `/section/${id}` },
-    openGraph: { url: `/section/${id}` },
+    alternates: { canonical: `/section/${id}/` },
+    openGraph: { url: `/section/${id}/` },
   };
 }
 
@@ -74,9 +75,8 @@ export default async function SectionPage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         ...breadcrumbSchema([
           { name: "Home", url: "/" },
-          { name: `Section ${section.id}`, url: `/section/${id}` },
+          { name: `Section ${section.id}`, url: `/section/${id}/` },
         ]),
-        dateModified: "2026-03-31",
         author: { "@type": "Organization", name: "DataPeek" },
       }) }} />
     </div>

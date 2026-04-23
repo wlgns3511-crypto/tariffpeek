@@ -10,8 +10,8 @@ const SITE_URL = "https://tariffpeek.com";
 
 interface Props { params: Promise<{ slug: string }> }
 
-export const dynamicParams = false;
-export const revalidate = false;
+export const dynamicParams = true;
+export const revalidate = 86400;
 
 export async function generateStaticParams() {
   return getTopCodes(300).map((c) => ({ slug: c.slug }));
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: `${SITE_URL}/es/code/${slug}/`,
       languages: { en: `${SITE_URL}/code/${slug}/`, es: `${SITE_URL}/es/code/${slug}/` },
     },
-    openGraph: { url: `/es/code/${slug}` },
+    openGraph: { url: `/es/code/${slug}/` },
   };
 }
 

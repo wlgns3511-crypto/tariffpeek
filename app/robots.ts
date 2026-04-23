@@ -14,6 +14,6 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "GPTBot", disallow: ["/"] },
       { userAgent: "CCBot", disallow: ["/"] },
     ],
-    sitemap: "https://tariffpeek.com/sitemap/0.xml",
+    sitemap: "https://tariffpeek.com/sitemap.xml",
   };
 }

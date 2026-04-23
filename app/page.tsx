@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { getAllSections, getChapters, countCodes, getAllCountries } from "@/lib/db";
+import { getAllSections, getChapters, countCodes, getAllCountries, getTopCodes } from "@/lib/db";
+import { PopularEntities } from "@/components/upgrades/PopularEntities";
+import { getAllStates } from "@/lib/states-data";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -10,6 +12,13 @@ export default function HomePage() {
   const sections = getAllSections();
   const chapters = getChapters();
   const totalCodes = countCodes();
+
+  const topCodes = getTopCodes(12);
+  const popularItems = topCodes.map(c => ({
+    name: `${c.hscode} — ${c.description.substring(0, 40)}${c.description.length > 40 ? '...' : ''}`,
+    href: `/code/${c.slug}/`,
+    stat: c.us_avg_duty != null ? `${c.us_avg_duty.toFixed(1)}%` : undefined,
+  }));
 
   return (
     <div>
@@ -27,6 +36,15 @@ export default function HomePage() {
           Search HS Codes →
         </a>
       </div>
+
+      <PopularEntities
+        heading="Most Searched HS Codes"
+        subheading="Common HS codes with US duty rates"
+        items={popularItems}
+        columns={3}
+        viewAllHref="/rankings"
+        viewAllLabel="View all HS codes →"
+      />
 
       {/* Sections */}
       <section className="mb-10">
@@ -72,6 +90,22 @@ export default function HomePage() {
               </a>
             ));
           })()}
+        </div>
+      </section>
+
+      {/* Browse by State */}
+      <section className="mb-10">
+        <h2 className="text-2xl font-bold mb-4">Import &amp; Trade by US State</h2>
+        <p className="text-sm text-slate-600 mb-4">Explore international trade data for all 50 states — major ports, top goods, and trade partners.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+          {getAllStates().map((s) => (
+            <a key={s.slug} href={`/state/${s.slug}/`} className="p-2 bg-slate-50 rounded-lg text-sm hover:bg-indigo-50 hover:text-indigo-700 transition-colors text-center">
+              <span className="font-mono text-xs text-slate-400 mr-1">{s.code}</span> {s.name}
+            </a>
+          ))}
+        </div>
+        <div className="mt-3">
+          <a href="/state/" className="text-sm text-indigo-600 hover:underline font-medium">View all state trade data &rarr;</a>
         </div>
       </section>
 

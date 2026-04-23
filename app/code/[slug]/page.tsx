@@ -1,18 +1,28 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getCodeBySlug, getTopCodes, getChildCodes, getRelatedCodes, getSectionById, getGlobalAvgDuty, getChapterAvgDuty, getDutyRank, getAllCountryTariffsForCode } from "@/lib/db";
+import { getAllCodes, getCodeBySlug, getChildCodes, getRelatedCodes, getSectionById, getGlobalAvgDuty, getChapterAvgDuty, getDutyRank, getDutyPeers, getAllCountryTariffsForCode } from "@/lib/db";
 import { InsightCards } from "@/components/InsightCards";
+import { InsightBlock } from "@/components/upgrades/InsightBlock";
+import { getTariffInsights } from "@/lib/insights";
 import { formatHSCode, levelLabel } from "@/lib/format";
 import { breadcrumbSchema, faqSchema, datasetSchema } from "@/lib/schema";
 import { analyzeHSCode } from "@/lib/tariff-analysis";
+import { generateAutoFAQs } from "@/lib/auto-faqs";
 import { getRequiredDocs } from "@/lib/documents";
 import { AdSlot } from "@/components/AdSlot";
 import { DataFeedback } from "@/components/DataFeedback";
 import { EmbedButton } from "@/components/EmbedButton";
 import { FreshnessTag } from "@/components/FreshnessTag";
 import { LandedCostCalculator } from "@/components/LandedCostCalculator";
+import { DutyCalculator } from "@/components/tools/DutyCalculator";
 import { CiteButton } from "@/components/CiteButton";
 import { AuthorBox } from "@/components/AuthorBox";
+import { AnswerHero } from "@/components/upgrades/AnswerHero";
+import { TrustBlock } from "@/components/upgrades/TrustBlock";
+import { DecisionNext } from "@/components/upgrades/DecisionNext";
+import { RelatedEntities } from '@/components/upgrades/RelatedEntities';
+import { FeedbackButton } from "@/components/FeedbackButton";
+import { TableOfContents } from '@/components/upgrades/TableOfContents';
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -20,22 +30,50 @@ function hsCodeFromSlug(slug: string): string | null {
   return slug.match(/^(\d{2,10})/)?.[1] ?? null;
 }
 
-export const dynamicParams = false;
+export const dynamicParams = true;
+export const revalidate = 86400;
 
 export async function generateStaticParams() {
-  return getTopCodes(3000).map((c) => ({ slug: c.slug }));
+  return getAllCodes().map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const hsCode = hsCodeFromSlug(slug);
   const formattedHsCode = hsCode ? formatHSCode(hsCode) : slug;
-  const description = `Lookup tariff classification, customs notes, and import duty benchmarks for HS ${formattedHsCode}.`;
+  const code = getCodeBySlug(slug);
+  // RANKING pattern: rank by US avg duty rate (higher duty = higher rank).
+  let title: string;
+  let description: string;
+  if (code && code.us_avg_duty != null && code.level >= 4) {
+    const { rank, total } = getDutyRank(code.us_avg_duty);
+    const peers = getDutyPeers(code.us_avg_duty, code.hscode);
+    const chapterAvg = code.chapter ? getChapterAvgDuty(code.chapter) : getGlobalAvgDuty();
+    const peerBits: string[] = [];
+    if (peers.above && peers.above.us_avg_duty != null) {
+      const p = getDutyRank(peers.above.us_avg_duty);
+      peerBits.push(`HS ${formatHSCode(peers.above.hscode)} (#${p.rank})`);
+    }
+    if (peers.below && peers.below.us_avg_duty != null) {
+      const p = getDutyRank(peers.below.us_avg_duty);
+      peerBits.push(`HS ${formatHSCode(peers.below.hscode)} (#${p.rank})`);
+    }
+    const peerStr = peerBits.length ? ` Compare with ${peerBits.join(' and ')}.` : '';
+    const shortDesc = code.description.length > 48 ? code.description.slice(0, 48) + '…' : code.description;
+    title = `HS ${formattedHsCode}: #${rank} of ${total} US Duty · ${code.us_avg_duty.toFixed(1)}%`;
+    description = `HS ${formattedHsCode} (${shortDesc}) ranks #${rank} of ${total} US tariff codes by duty rate (${code.us_avg_duty.toFixed(1)}%). Chapter avg ${chapterAvg.toFixed(1)}%.${peerStr} USITC data.`;
+  } else if (code) {
+    title = `HS ${formattedHsCode}: ${code.description.slice(0, 50)} · US Tariff`;
+    description = `HS ${formattedHsCode} — ${code.description}. ${code.level >= 4 ? 'Duty rates' : 'Classification and subcategories'}, customs notes, and import benchmarks. USITC data.`;
+  } else {
+    title = `HS ${formattedHsCode}: Import Duty & Tariff Classification`;
+    description = `Lookup tariff classification, customs notes, and import duty benchmarks for HS ${formattedHsCode}. USITC data.`;
+  }
   return {
-    title: `HS Code ${formattedHsCode} — Import Duty Rate & Tariff Classification`,
+    title,
     description,
-    alternates: { canonical: `/code/${slug}` },
-    openGraph: { url: `/code/${slug}` },
+    alternates: { canonical: `/code/${slug}/` },
+    openGraph: { title, description, url: `/code/${slug}/` },
   };
 }
 
@@ -48,12 +86,16 @@ export default async function CodePage({ params }: Props) {
   const children = getChildCodes(code.hscode);
   const related = getRelatedCodes(code.hscode, 8);
   const analysis = analyzeHSCode(code, section);
+  const globalAvgDuty = getGlobalAvgDuty();
+  const chapterAvgDuty = code.chapter ? getChapterAvgDuty(code.chapter) : globalAvgDuty;
+  const autoFaqs = generateAutoFAQs(code, globalAvgDuty, chapterAvgDuty, children.length, !!code.us_fta_notes);
+  const allFaqs = [...analysis.faqs, ...autoFaqs];
   const docs = code.chapter ? getRequiredDocs(code.chapter) : null;
 
   const breadcrumbs = [
     { name: "Home", url: "/" },
-    ...(section ? [{ name: `Section ${section.id}`, url: `/section/${section.id}` }] : []),
-    { name: `HS ${formatHSCode(code.hscode)}`, url: `/code/${slug}` },
+    ...(section ? [{ name: `Section ${section.id}`, url: `/section/${section.id}/` }] : []),
+    { name: `HS ${formatHSCode(code.hscode)}`, url: `/code/${slug}/` },
   ];
 
   return (
@@ -64,20 +106,49 @@ export default async function CodePage({ params }: Props) {
         ))}
       </nav>
 
-      <div className="flex items-center gap-3 mb-2">
-        <h1 className="text-3xl font-bold">HS {formatHSCode(code.hscode)}</h1>
-        <span className="px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-sm font-medium">
-          {levelLabel(code.level)}
-        </span>
-      </div>
-      <p className="text-lg text-slate-700 mb-6">{code.description}</p>
+      <AnswerHero
+        title={`HS ${formatHSCode(code.hscode)}`}
+        subtitle={code.description}
+        tagline={`${analysis.summary}${code.us_avg_duty !== null ? ` US average duty rate: ${code.us_avg_duty.toFixed(2)}%.` : ""}${code.us_fta_notes ? " Free trade agreements may reduce or eliminate duty for qualifying origins." : ""}`}
+        badges={[
+          { label: levelLabel(code.level), tone: "indigo" as const },
+          ...(section ? [{ label: `Section ${section.id}`, tone: "slate" as const }] : []),
+          ...(code.us_avg_duty !== null ? [{ label: `${code.us_avg_duty.toFixed(2)}% duty`, tone: "amber" as const }] : []),
+        ]}
+        alternatives={related.slice(0, 3).map(r => ({
+          label: `HS ${formatHSCode(r.hscode)}`,
+          href: `/code/${r.slug}/`,
+          sublabel: r.description?.substring(0, 30),
+        }))}
+        alternativesLabel="Related HS codes"
+      />
 
-      {/* Summary */}
-      <section className="mb-6">
-        <div className="bg-indigo-50 border-l-4 border-indigo-400 p-4 rounded-r-lg">
-          <p className="text-slate-700 text-sm">{analysis.summary}</p>
-        </div>
-      </section>
+      <TrustBlock
+        sources={[
+          { name: "WCO Harmonized System", url: "https://www.wcoomd.org/en/topics/nomenclature/overview.aspx" },
+          { name: "USITC HTS", url: `https://hts.usitc.gov/?query=${code.hscode}/` },
+          { name: "US CBP CROSS Rulings", url: "https://rulings.cbp.gov/" },
+          { name: "USTR Free Trade Agreements", url: "https://ustr.gov/trade-agreements/free-trade-agreements" },
+          { name: "Census USA Trade Online", url: "https://usatrade.census.gov/" },
+        ]}
+        updated={`HTS ${new Date().getFullYear()} edition, refreshed monthly`}
+      />
+
+      <TableOfContents />
+
+      {/* Insight Block */}
+      {code.us_avg_duty !== null && (() => {
+        const globalAvgIB = getGlobalAvgDuty();
+        const chapterAvgIB = code.chapter ? getChapterAvgDuty(code.chapter) : globalAvgIB;
+        const rankIB = getDutyRank(code.us_avg_duty);
+        return (
+          <InsightBlock
+            entityName={`HS ${formatHSCode(code.hscode)}`}
+            insights={getTariffInsights(code, globalAvgIB, chapterAvgIB, rankIB.rank, rankIB.total, !!code.us_fta_notes)}
+            heading="Key Takeaways"
+          />
+        );
+      })()}
 
       {/* Tariff Insights */}
       {code.us_avg_duty !== null && (() => {
@@ -163,9 +234,41 @@ export default async function CodePage({ params }: Props) {
         </section>
       )}
 
+      {/* Import Duty Calculator */}
+      {code.us_avg_duty !== null && (
+        <DutyCalculator
+          dutyRate={code.us_avg_duty}
+          hasFta={!!code.us_fta_notes}
+          hsCode={formatHSCode(code.hscode)}
+          description={code.description}
+        />
+      )}
+
       {/* Landed Cost Calculator */}
       {code.us_avg_duty !== null && (
         <LandedCostCalculator defaultTariffRate={code.us_avg_duty} hsCode={formatHSCode(code.hscode)} />
+      )}
+
+      {/* By-FTA cross-link (HCU Tier S depth expansion 2026-04-21, chapter-level only) */}
+      {code.level === 2 && (
+        <section className="my-6">
+          <a
+            href={`/code/${slug}/by-fta/`}
+            className="block rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 p-5 hover:border-emerald-400 hover:shadow-sm transition-all"
+          >
+            <div className="text-xs font-semibold text-emerald-700 uppercase tracking-wider mb-2">
+              FTA preference breakdown →
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-1">
+              HS {formatHSCode(code.hscode)} by free-trade agreement: MFN vs preferential rates
+            </h3>
+            <p className="text-sm text-slate-600">
+              See which FTA programs (USMCA, RCEP, EU CETA, KORUS…) cover this chapter,
+              the average MFN-to-FTA gap per program, and which countries still charge MFN
+              to every origin.
+            </p>
+          </a>
+        </section>
       )}
 
       {/* Classification Tip */}
@@ -343,10 +446,21 @@ export default async function CodePage({ params }: Props) {
         </div>
       </section>
 
+      <RelatedEntities
+        entityName={`HS ${formatHSCode(code.hscode)}`}
+        heading={`Related HS codes`}
+        statLabel="Duty rate"
+        items={related.slice(0, 8).map(r => ({
+          name: `HS ${formatHSCode(r.hscode)} — ${r.description.substring(0, 40)}`,
+          href: `/code/${r.slug}/`,
+          stat: r.us_avg_duty !== null ? `${r.us_avg_duty.toFixed(1)}%` : undefined,
+        }))}
+      />
+
       {/* FAQ */}
       <section className="mt-8">
         <h2 className="text-xl font-bold mb-4">Frequently Asked Questions</h2>
-        {analysis.faqs.map((faq, i) => (
+        {allFaqs.map((faq, i) => (
           <details key={i} className="border border-slate-200 rounded-lg mb-2" open={i === 0}>
             <summary className="p-4 cursor-pointer font-medium hover:bg-slate-50">{faq.question}</summary>
             <div className="px-4 pb-4 text-slate-600">{faq.answer}</div>
@@ -354,7 +468,79 @@ export default async function CodePage({ params }: Props) {
         ))}
       </section>
 
-      <FreshnessTag source="UN Comtrade & USITC" />
+      {/* Why this matters — US importer / exporter context */}
+      <section className="mb-8 mt-6" data-upgrade="why-it-matters">
+        <h2 className="text-xl font-bold mb-3">
+          Why HS {formatHSCode(code.hscode)} matters for your shipment
+        </h2>
+        <div className="rounded-lg border border-slate-200 bg-white p-5 text-slate-700 leading-relaxed space-y-3">
+          <p>
+            HS code classification is the single most important
+            decision in any international trade transaction. The
+            6-digit Harmonized System (HS) is set by the World Customs
+            Organization and used by 200+ countries; the US extends it
+            to 10 digits as the Harmonized Tariff Schedule (HTS). The
+            HTS code determines: (1) the duty rate you pay, (2) which
+            free trade agreements you can claim, (3) what import
+            licenses or permits you need, and (4) whether your goods
+            face anti-dumping or Section 301 tariffs.
+          </p>
+          <p>
+            Misclassification is the #1 source of customs penalties.
+            CBP regularly audits classifications and can apply 4
+            years of back duties plus penalties (up to 4x the duty
+            owed for negligence, 8x for fraud). The safe path is to
+            request a binding ruling from CBP via the
+            {" "}<a href="https://rulings.cbp.gov/" className="underline" target="_blank" rel="noopener noreferrer">CROSS database</a>
+            for any product where the classification isn&apos;t
+            obvious.
+          </p>
+          <p>
+            For US importers, three concrete checks before any
+            shipment: (1) confirm the 10-digit HTS code on the
+            official{" "}
+            <a href="https://hts.usitc.gov/" className="underline" target="_blank" rel="noopener noreferrer">USITC HTS database</a>
+            , (2) check current Section 301 lists and any antidumping
+            orders for the country of origin, and (3) verify whether
+            an FTA preference (USMCA, KORUS, AUSFTA, etc.) applies and
+            what certification it requires.
+          </p>
+          <p className="text-sm text-slate-500">
+            Sources: WCO Harmonized System Nomenclature, USITC HTS
+            (the legal US tariff schedule), CBP CROSS rulings
+            database. Not affiliated with WCO, USITC, or CBP. For
+            binding classification, request a CROSS ruling.
+          </p>
+        </div>
+      </section>
+
+      <DecisionNext
+        cards={[
+          {
+            title: `Look up on USITC HTS`,
+            blurb: `The official US legal tariff schedule. Always verify the 10-digit code here before filing.`,
+            href: `https://hts.usitc.gov/?query=${code.hscode}`,
+            cta: `Open USITC HTS`,
+            tone: "indigo" as const,
+          },
+          {
+            title: `Shipping costs to/from`,
+            blurb: `Once you have the duty rate, layer in freight cost for the full landed-cost picture.`,
+            href: `https://shipcalcwize.com`,
+            cta: `Open ShipCalcWize`,
+            tone: "emerald" as const,
+          },
+          {
+            title: `CBP CROSS rulings`,
+            blurb: `Search prior CBP classification rulings for similar products. The most authoritative US source for borderline cases.`,
+            href: `https://rulings.cbp.gov/`,
+            cta: `Open CBP CROSS`,
+            tone: "amber" as const,
+          },
+        ]}
+      />
+
+      <FreshnessTag source="WCO HS Nomenclature + USITC HTS + CBP CROSS rulings + USTR FTA texts" />
 
       <div className="flex items-center gap-4 mt-4">
         <CiteButton title={`HS Code ${formatHSCode(code.hscode)} - ${code.description}`} url={`https://tariffpeek.com/code/${slug}`} source="TariffPeek (WCO Data)" />
@@ -372,10 +558,12 @@ export default async function CodePage({ params }: Props) {
         </p>
       </section>
 
+      <FeedbackButton pageId={slug} />
+
       <AuthorBox />
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema(breadcrumbs)) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(analysis.faqs)) }} />
+      {allFaqs.length > 0 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(allFaqs)) }} />}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datasetSchema(`HS Code ${formatHSCode(code.hscode)}`, code.description)) }} />
     </div>
   );

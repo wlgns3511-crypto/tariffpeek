@@ -15,7 +15,8 @@ interface Props {
   params: Promise<{ country: string }>;
 }
 
-export const dynamicParams = false;
+export const dynamicParams = true;
+export const revalidate = 86400;
 
 export async function generateStaticParams() {
   return getAllCountries().map((c) => ({ country: c.slug }));
@@ -29,8 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${countryData.name} Import Tariff Rates — Duty Rates by HS Code`,
     description: `Complete guide to ${countryData.name} import tariff rates. Browse duty rates by HS code, FTA benefits, average tariffs by product category, and import requirements.`,
-    alternates: { canonical: `/import/${country}` },
-    openGraph: { url: `/import/${country}` },
+    alternates: { canonical: `/import/${country}/` },
+    openGraph: { url: `/import/${country}/` },
   };
 }
 
@@ -66,7 +67,7 @@ export default async function CountryOverviewPage({ params }: Props) {
 
   const breadcrumbs = [
     { name: "Home", url: "/" },
-    { name: `${flag} ${countryData.name} Tariffs`, url: `/import/${country}` },
+    { name: `${flag} ${countryData.name} Tariffs`, url: `/import/${country}/` },
   ];
 
   const faqs = [
@@ -113,6 +114,32 @@ export default async function CountryOverviewPage({ params }: Props) {
       <p className="text-lg text-slate-600 mb-8">
         Complete guide to import duty rates for {countryData.name}. Browse tariff rates by product category and HS code.
       </p>
+
+      {/* Depth-layer-2 cross-link: US exporter snapshot — HCU Batch 7 (2026-04-21) */}
+      {country !== 'us' && (
+        <section className="my-6">
+          <a
+            href={`/import/${country}/top-imports-from-us/`}
+            className="block rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 p-5 transition hover:border-emerald-400 hover:shadow-md"
+          >
+            <div className="flex items-start gap-3">
+              <div className="text-2xl" aria-hidden="true">&#x1F1FA;&#x1F1F8;</div>
+              <div className="flex-1">
+                <div className="text-xs font-semibold uppercase tracking-wide text-emerald-700 mb-1">
+                  New &middot; US exporter snapshot
+                </div>
+                <div className="font-bold text-slate-900 text-base mb-1">
+                  Exporting from US to {countryData.name}: FTA savings + MFN barriers decoded
+                </div>
+                <p className="text-sm text-slate-600">
+                  Tariff landscape for US-origin goods: biggest FTA savings, top MFN barriers, zero-rated starting points, and 2026 reciprocal-tariff context.
+                </p>
+                <div className="mt-2 text-sm font-medium text-emerald-700">See US export snapshot &rarr;</div>
+              </div>
+            </div>
+          </a>
+        </section>
+      )}
 
       {/* Summary Stats */}
       <section className="mb-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -251,7 +278,7 @@ export default async function CountryOverviewPage({ params }: Props) {
       </p>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema(breadcrumbs)) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(faqs)) }} />
+      {faqs.length > 0 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(faqs)) }} />}
     </div>
   );
 }

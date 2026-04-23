@@ -26,11 +26,11 @@ function hsCodeFromSlug(slug: string): string | null {
   return slug.match(/^(\d{2,10})/)?.[1] ?? null;
 }
 
-export const dynamicParams = false;
-export const revalidate = false;
+export const dynamicParams = true;
+export const revalidate = 86400;
 
 export async function generateStaticParams() {
-  return getTopCountryTariffParams(50);
+  return getTopCountryTariffParams(500);
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -43,8 +43,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${countryName} Import Tariff for HS ${formattedHsCode} — Tariff Lookup`,
     description,
-    alternates: { canonical: `/import/${country}/${slug}` },
-    openGraph: { url: `/import/${country}/${slug}` },
+    alternates: { canonical: `/import/${country}/${slug}/` },
+    openGraph: { url: `/import/${country}/${slug}/` },
   };
 }
 
@@ -78,8 +78,8 @@ export default async function CountryTariffPage({ params }: Props) {
 
   const breadcrumbs = [
     { name: "Home", url: "/" },
-    { name: `${flag} ${countryData.name} Tariffs`, url: `/import/${country}` },
-    { name: `HS ${formatHSCode(code.hscode)}`, url: `/import/${country}/${slug}` },
+    { name: `${flag} ${countryData.name} Tariffs`, url: `/import/${country}/` },
+    { name: `HS ${formatHSCode(code.hscode)}`, url: `/import/${country}/${slug}/` },
   ];
 
   const faqs = [
@@ -326,7 +326,7 @@ export default async function CountryTariffPage({ params }: Props) {
       </p>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema(breadcrumbs)) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(faqs)) }} />
+      {faqs.length > 0 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(faqs)) }} />}
     </div>
   );
 }

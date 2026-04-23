@@ -5,6 +5,7 @@ import { formatHSCode, levelLabel } from "@/lib/format";
 export const metadata: Metadata = {
   title: "Search HS Codes",
   description: "Search the Harmonized System database. Find HS codes by product name or code number for customs classification.",
+  robots: { index: false, follow: true },
   alternates: { canonical: "/search/" },
   openGraph: { url: "/search/" },
 };

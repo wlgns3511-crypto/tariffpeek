@@ -4,6 +4,8 @@ import { getAllPosts, getPostBySlug } from "@/lib/blog";
 import { AdSlot } from "@/components/AdSlot";
 import { AuthorBox } from "@/components/AuthorBox";
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return getAllPosts().map((p) => ({ slug: p.slug }));
 }
@@ -23,7 +25,7 @@ export async function generateMetadata({
       canonical: `/blog/${slug}/`,
     },
     openGraph: {
-      url: `/blog/${slug}`,
+      url: `/blog/${slug}/`,
       type: "article",
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt ?? post.publishedAt,
@@ -69,15 +71,9 @@ export default async function BlogPostPage({
             datePublished: post.publishedAt,
             dateModified: post.updatedAt ?? post.publishedAt,
             author: {
-              "@type": "Person",
-              name: "TariffPeek Trade Research Team",
-              description: "US customs and international trade policy research",
-              url: "https://tariff-peek.com/about/",
-              worksFor: {
-                "@type": "Organization",
-                name: "TariffPeek",
-                url: "https://tariff-peek.com",
-              },
+              "@type": "Organization",
+              name: "TariffPeek Editorial Team",
+              url: "https://tariffpeek.com/editorial-policy/",
             },
             publisher: {
               "@type": "Organization",

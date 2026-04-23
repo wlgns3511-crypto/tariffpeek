@@ -6,16 +6,19 @@ import { ComparisonBar } from "@/components/ComparisonBar";
 import { FreshnessTag } from "@/components/FreshnessTag";
 
 interface Props { params: Promise<{ slug: string }> }
+const STATIC_COMPARISON_SLUGS = getAllCodeComparisonSlugs(100).map((c) => c.slug);
+const STATIC_COMPARISON_SET = new Set(STATIC_COMPARISON_SLUGS);
 
 export const dynamicParams = false;
-export const revalidate = false;
+export const revalidate = 86400;
 
 export async function generateStaticParams() {
-  return getAllCodeComparisonSlugs(600).map((c) => ({ slug: c.slug }));
+  return STATIC_COMPARISON_SLUGS.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  if (!STATIC_COMPARISON_SET.has(slug)) return {};
   const comp = getCodeComparisonBySlug(slug);
   if (!comp) return {};
   const a = getCodeBySlug(comp.code_a);
@@ -24,13 +27,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${a.description} vs ${b.description} - Tariff & Duty Rate Comparison`,
     description: `Compare tariff rates: ${a.description} (${a.us_avg_duty ?? 'N/A'}% duty) vs ${b.description} (${b.us_avg_duty ?? 'N/A'}% duty). HS Code ${a.hscode} vs ${b.hscode}.`,
-    alternates: { canonical: `/compare/${slug}` },
-    openGraph: { url: `/compare/${slug}` },
+    alternates: { canonical: `/compare/${slug}/` },
+    openGraph: { url: `/compare/${slug}/` },
   };
 }
 
 export default async function ComparePage({ params }: Props) {
   const { slug } = await params;
+  if (!STATIC_COMPARISON_SET.has(slug)) notFound();
   const comp = getCodeComparisonBySlug(slug);
   if (!comp) notFound();
 
