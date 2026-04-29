@@ -51,7 +51,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // RANKING pattern: rank by US avg duty rate (higher duty = higher rank).
   let title: string;
   let description: string;
-  if (code && code.us_avg_duty != null && code.level >= 4) {
+  if (code && code.us_avg_duty != null && code.level === 2) {
+    // Chapter-level: show avg duty, range, subcategory count
+    const childCount = getChildCodes(code.hscode).length;
+    const shortDesc = code.description.length > 40 ? code.description.slice(0, 40) + '…' : code.description;
+    const rangeStr = code.us_duty_range ? ` (range: ${code.us_duty_range})` : '';
+    title = `HS ${formattedHsCode} ${shortDesc}: ${code.us_avg_duty.toFixed(1)}% Avg Duty | ${childCount} Subcodes`;
+    description = `HS Chapter ${formattedHsCode} (${code.description}) — US avg duty ${code.us_avg_duty.toFixed(1)}%${rangeStr}. ${childCount} sub-classifications, duty calculator, FTA preferences, and import document checklist. USITC 2026 data.`;
+  } else if (code && code.us_avg_duty != null && code.level >= 4) {
     const { rank, total } = getDutyRank(code.us_avg_duty);
     const peers = getDutyPeers(code.us_avg_duty, code.hscode);
     const chapterAvg = code.chapter ? getChapterAvgDuty(code.chapter) : getGlobalAvgDuty();
