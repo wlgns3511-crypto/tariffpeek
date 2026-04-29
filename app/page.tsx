@@ -3,10 +3,21 @@ import { getAllSections, getChapters, countCodes, getAllCountries, getTopCodes }
 import { PopularEntities } from "@/components/upgrades/PopularEntities";
 import { getAllStates } from "@/lib/states-data";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/" },
-  openGraph: { url: "/" },
-};
+export function generateMetadata(): Metadata {
+  const totalCodes = countCodes();
+  const countries = getAllCountries();
+  const states = getAllStates();
+  return {
+    title: `HS Code Lookup — ${totalCodes.toLocaleString()} Codes · ${countries.length} Countries · 2026 Tariff Data`,
+    description: `Search ${totalCodes.toLocaleString()} Harmonized System codes with US duty rates, FTA preferences, and import documents. Compare tariffs across ${countries.length} countries and trade data for ${states.length} US states. USITC 2026 data, updated monthly.`,
+    alternates: { canonical: "/" },
+    openGraph: {
+      title: `TariffPeek — ${totalCodes.toLocaleString()} HS Codes · Tariff Rates for ${countries.length} Countries`,
+      description: `Free HS code lookup with duty rates, FTA savings, and import docs. ${countries.length} countries, ${states.length} US states.`,
+      url: "/",
+    },
+  };
+}
 
 export default function HomePage() {
   const sections = getAllSections();
