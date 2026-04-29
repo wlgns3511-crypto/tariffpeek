@@ -312,6 +312,85 @@ export function getCountryTariffSitemapCount(): number {
   });
 }
 
+// --- Cross-country comparison (Layer 0 depth) ---
+
+export interface CountryRankRow {
+  country_slug: string;
+  country_name: string;
+  avg_mfn: number;
+  fta_count: number;
+  lowest_chapter: string;
+  lowest_chapter_desc: string;
+  lowest_chapter_rate: number;
+  highest_chapter: string;
+  highest_chapter_desc: string;
+  highest_chapter_rate: number;
+}
+
+/** All 20 countries ranked by avg MFN rate, with their min/max chapters. */
+export function getCountryRankings(): CountryRankRow[] {
+  return withDb([], (db) => {
+    // Step 1: avg MFN per country
+    const avgs = db.prepare(`
+      SELECT ct.country_slug, co.name as country_name,
+             ROUND(AVG(ct.mfn_rate), 1) as avg_mfn,
+             (SELECT COUNT(DISTINCT fta_name) FROM country_tariffs
+              WHERE country_slug = ct.country_slug AND fta_name IS NOT NULL AND fta_name != 'No FTA') as fta_count
+      FROM country_tariffs ct
+      JOIN countries co ON ct.country_slug = co.slug
+      GROUP BY ct.country_slug
+      ORDER BY avg_mfn ASC
+    `).all() as { country_slug: string; country_name: string; avg_mfn: number; fta_count: number }[];
+
+    return avgs.map((row) => {
+      // Per-chapter avg for this country
+      const chapters = db.prepare(`
+        SELECT c.chapter, ROUND(AVG(ct.mfn_rate), 1) as ch_avg,
+               (SELECT description FROM codes WHERE chapter = c.chapter AND level = 2 LIMIT 1) as description
+        FROM country_tariffs ct
+        JOIN codes c ON ct.hs_code = c.hscode
+        WHERE ct.country_slug = ? AND c.level >= 4
+        GROUP BY c.chapter
+        ORDER BY ch_avg ASC
+      `).all(row.country_slug) as { chapter: string; ch_avg: number; description: string }[];
+
+      const lowest = chapters[0];
+      const highest = chapters[chapters.length - 1];
+
+      return {
+        ...row,
+        lowest_chapter: lowest?.chapter ?? "",
+        lowest_chapter_desc: (lowest?.description ?? "").replace(/[,;(].*/,"").trim().substring(0, 40),
+        lowest_chapter_rate: lowest?.ch_avg ?? 0,
+        highest_chapter: highest?.chapter ?? "",
+        highest_chapter_desc: (highest?.description ?? "").replace(/[,;(].*/,"").trim().substring(0, 40),
+        highest_chapter_rate: highest?.ch_avg ?? 0,
+      };
+    });
+  });
+}
+
+/** Global average MFN across all 20 countries. */
+export function getGlobalMfnAvg(): number {
+  return withDb(0, (db) => {
+    const r = db.prepare('SELECT ROUND(AVG(mfn_rate), 1) as avg FROM country_tariffs').get() as { avg: number };
+    return r?.avg ?? 0;
+  });
+}
+
+/** FTA savings potential: avg (MFN - FTA) where FTA < MFN for a country. */
+export function getCountryFtaSavings(countrySlug: string): { avg_saving: number; covered_pct: number } {
+  return withDb({ avg_saving: 0, covered_pct: 0 }, (db) => {
+    const r = db.prepare(`
+      SELECT ROUND(AVG(mfn_rate - fta_rate), 1) as avg_saving,
+             ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM country_tariffs WHERE country_slug = ?), 1) as covered_pct
+      FROM country_tariffs
+      WHERE country_slug = ? AND fta_rate IS NOT NULL AND fta_rate < mfn_rate AND fta_name != 'No FTA'
+    `).get(countrySlug, countrySlug) as { avg_saving: number; covered_pct: number } | undefined;
+    return { avg_saving: r?.avg_saving ?? 0, covered_pct: r?.covered_pct ?? 0 };
+  });
+}
+
 export function getCountryTariffSitemapPage(offset: number, limit: number): { country_slug: string; code_slug: string }[] {
   return withDb([], (db) => db.prepare(`
     SELECT ct.country_slug, c.slug as code_slug

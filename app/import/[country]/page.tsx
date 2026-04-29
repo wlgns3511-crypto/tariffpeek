@@ -7,9 +7,14 @@ import {
   getCountryOverallAvg,
   getCountryFtaPartners,
   getTariffsForCountry,
+  getCountryRankings,
+  getGlobalMfnAvg,
+  getCountryFtaSavings,
 } from "@/lib/db";
 import { formatHSCode } from "@/lib/format";
 import { breadcrumbSchema, faqSchema } from "@/lib/schema";
+import { buildCountryFacts, statusLabel } from "@/lib/country-facts";
+import { getTradeProfileNarrative, getFtaInsight, getImplication } from "@/lib/country-commentary";
 
 interface Props {
   params: Promise<{ country: string }>;
@@ -81,6 +86,20 @@ export default async function CountryOverviewPage({ params }: Props) {
   const allCountries = getAllCountries();
   const flag = FLAG[country] || "";
 
+  // Layer 0+1+2: cross-country comparison data
+  const rankings = getCountryRankings();
+  const globalAvg = getGlobalMfnAvg();
+  const ftaSavings = getCountryFtaSavings(country);
+  const facts = buildCountryFacts(country, countryData.name, rankings, globalAvg, ftaSavings);
+  const profileNarrative = getTradeProfileNarrative(country, countryData.name, facts);
+  const ftaInsight = getFtaInsight(country, countryData.name, facts);
+  const implication = getImplication(country, countryData.name, facts);
+
+  // Neighbors in ranking for comparison card
+  const rankIdx = rankings.findIndex((r) => r.country_slug === country);
+  const moreOpen = rankIdx > 0 ? rankings[rankIdx - 1] : null;
+  const moreRestrict = rankIdx < rankings.length - 1 ? rankings[rankIdx + 1] : null;
+
   const breadcrumbs = [
     { name: "Home", url: "/" },
     { name: `${flag} ${countryData.name} Tariffs`, url: `/import/${country}/` },
@@ -89,19 +108,23 @@ export default async function CountryOverviewPage({ params }: Props) {
   const faqs = [
     {
       question: `What is the average import tariff rate in ${countryData.name}?`,
-      answer: `The average MFN tariff rate across all product categories in ${countryData.name} is approximately ${overallAvg}%. Rates vary significantly by product category, from 0% for some raw materials to over 20% for protected sectors.`,
+      answer: `The average MFN tariff rate across all product categories in ${countryData.name} is approximately ${overallAvg}%. This is ${facts.vsGlobalPhrase}. Rates vary from ${facts.lowestSectorRate}% for ${facts.lowestSector.toLowerCase()} to ${facts.highestSectorRate}% for ${facts.highestSector.toLowerCase()}.`,
     },
     {
       question: `Does ${countryData.name} have free trade agreements?`,
       answer: ftaPartners.length > 0
-        ? `Yes, ${countryData.name} has several FTAs including: ${ftaPartners.slice(0, 5).map((f) => f.fta_name).join(", ")}. These agreements offer reduced or zero tariff rates for qualifying products.`
-        : `${countryData.name} has limited FTA coverage. Most imports are subject to standard MFN rates.`,
+        ? `Yes, ${countryData.name} has ${ftaPartners.length} FTAs including: ${ftaPartners.slice(0, 5).map((f) => f.fta_name).join(", ")}. These cover about ${facts.ftaCoveredPct}% of tariff lines with an average duty reduction of ${facts.ftaSavingAvg}%.`
+        : `${countryData.name} has limited FTA coverage. Most imports are subject to standard MFN rates of ${overallAvg}% on average.`,
     },
     {
       question: `Which products have the highest tariffs in ${countryData.name}?`,
       answer: topTariffs.length > 0
-        ? `The highest tariff rates in ${countryData.name} are found in categories like ${topTariffs.slice(0, 3).map((t) => `${t.description.substring(0, 40)} (${t.mfn_rate}%)`).join(", ")}.`
+        ? `The highest tariff rates in ${countryData.name} are found in categories like ${topTariffs.slice(0, 3).map((t) => `${t.description.substring(0, 40)} (${t.mfn_rate}%)`).join(", ")}. The most protected sector overall is ${facts.highestSector} at ${facts.highestSectorRate}% average.`
         : "Tariff data is being compiled.",
+    },
+    {
+      question: `How does ${countryData.name} compare to other countries on tariffs?`,
+      answer: `${countryData.name} ranks as the ${facts.rankPhrase} by average MFN tariff rate. At ${overallAvg}%, it is ${facts.vsGlobalPhrase}. ${moreOpen ? `The next more open economy is ${moreOpen.country_name} at ${moreOpen.avg_mfn}%.` : ""} ${moreRestrict ? `The next more restrictive is ${moreRestrict.country_name} at ${moreRestrict.avg_mfn}%.` : ""}`,
     },
     {
       question: `How do I look up a specific HS code tariff for ${countryData.name}?`,
@@ -127,9 +150,48 @@ export default async function CountryOverviewPage({ params }: Props) {
       <h1 className="text-3xl font-bold mb-2">
         {flag} {countryData.name} Import Tariff Rates
       </h1>
-      <p className="text-lg text-slate-600 mb-8">
-        Complete guide to import duty rates for {countryData.name}. Browse tariff rates by product category and HS code.
+      <p className="text-lg text-slate-600 mb-4">
+        {countryData.name} is {statusLabel(facts.status)} with an average MFN tariff of {overallAvg}%. Browse duty rates by product category and HS code.
       </p>
+
+      {/* Layer 2: Trade Profile Narrative */}
+      <section className="mb-8 rounded-xl border border-slate-200 bg-slate-50 p-5">
+        <h2 className="text-lg font-bold text-slate-900 mb-2">{countryData.name} Tariff Profile</h2>
+        <p className="text-sm text-slate-700 leading-relaxed mb-3">{profileNarrative}</p>
+        {ftaInsight && (
+          <p className="text-sm text-slate-700 leading-relaxed mb-3">{ftaInsight}</p>
+        )}
+        <div className="rounded-lg bg-indigo-50 border border-indigo-100 p-3">
+          <p className="text-sm font-medium text-indigo-900">What this means for importers</p>
+          <p className="text-sm text-indigo-800 mt-1">{implication}</p>
+        </div>
+      </section>
+
+      {/* Layer 1: Global Ranking Card */}
+      <section className="mb-8">
+        <h2 className="text-lg font-bold text-slate-900 mb-3">Global Tariff Ranking</h2>
+        <div className="grid grid-cols-3 gap-3">
+          {moreOpen && (
+            <a href={`/import/${moreOpen.country_slug}/`} className="rounded-lg border border-green-200 bg-green-50 p-3 text-center hover:border-green-400 transition-colors">
+              <div className="text-xs text-green-600 font-medium mb-1">More Open</div>
+              <div className="text-sm font-bold text-green-800">{FLAG[moreOpen.country_slug] || ""} {moreOpen.country_name}</div>
+              <div className="text-lg font-bold text-green-700">{moreOpen.avg_mfn}%</div>
+            </a>
+          )}
+          <div className="rounded-lg border-2 border-indigo-300 bg-indigo-50 p-3 text-center">
+            <div className="text-xs text-indigo-600 font-medium mb-1">#{facts.rank} of {facts.totalCountries}</div>
+            <div className="text-sm font-bold text-indigo-800">{flag} {countryData.name}</div>
+            <div className="text-lg font-bold text-indigo-700">{overallAvg}%</div>
+          </div>
+          {moreRestrict && (
+            <a href={`/import/${moreRestrict.country_slug}/`} className="rounded-lg border border-orange-200 bg-orange-50 p-3 text-center hover:border-orange-400 transition-colors">
+              <div className="text-xs text-orange-600 font-medium mb-1">More Restrictive</div>
+              <div className="text-sm font-bold text-orange-800">{FLAG[moreRestrict.country_slug] || ""} {moreRestrict.country_name}</div>
+              <div className="text-lg font-bold text-orange-700">{moreRestrict.avg_mfn}%</div>
+            </a>
+          )}
+        </div>
+      </section>
 
       {/* Depth-layer-2 cross-link: US exporter snapshot — HCU Batch 7 (2026-04-21) */}
       {country !== 'us' && (
