@@ -302,9 +302,10 @@ export default async function CodeByFtaPage({
                 </div>
                 <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
                   {g.rows.map((r) => (
+                    // 2026-04-28 — link target redirect: /import/${country}/${slug}/ (noindex) → /import/${country}/ (indexable hub)
                     <Link
                       key={r.country_slug}
-                      href={`/import/${r.country_slug}/${code.slug}/`}
+                      href={`/import/${r.country_slug}/`}
                       className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 rounded-full text-xs text-slate-700 transition"
                     >
                       <span className="font-medium">{r.country_name}</span>
@@ -350,8 +351,9 @@ export default async function CodeByFtaPage({
                     return (
                       <tr key={r.country_slug} className="border-t hover:bg-slate-50">
                         <td className="p-3 font-medium">
+                          {/* 2026-04-28 — link target redirect: /import/${country}/${slug}/ (noindex) → /import/${country}/ (indexable hub) */}
                           <Link
-                            href={`/import/${r.country_slug}/${code.slug}/`}
+                            href={`/import/${r.country_slug}/`}
                             className="text-indigo-700 hover:underline"
                           >
                             {r.country_name}

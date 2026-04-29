@@ -26,7 +26,7 @@ function hsCodeFromSlug(slug: string): string | null {
   return slug.match(/^(\d{2,10})/)?.[1] ?? null;
 }
 
-export const dynamicParams = true;
+export const dynamicParams = false;
 export const revalidate = 86400;
 
 export async function generateStaticParams() {
@@ -45,6 +45,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     alternates: { canonical: `/import/${country}/${slug}/` },
     openGraph: { url: `/import/${country}/${slug}/` },
+    // 2026-04-26 noindex (HCU scaled-content remediation): GSC reports 1,004
+    // /import/[country]/[slug]/ as "Discovered/Crawled - not indexed" — Google
+    // judges these HS code × country pages as thin lookup-table derivatives.
+    // Sitemap already excludes slug-level /import/; aggregate /import/[country]/
+    // remains the canonical indexable surface.
+    robots: { index: false, follow: true },
   };
 }
 

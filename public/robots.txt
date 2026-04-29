@@ -3,6 +3,9 @@ Allow: /
 Disallow: /api/
 Disallow: /_next/
 Disallow: /embed/
+# 2026-04-28 — /import/[country]/[slug]/ noindex 4/26 (HCU scaled-content remediation, GSC 1,004p Discovered-not-indexed)
+# country index /import/[country]/ remains indexable (geographic hub, MFN/FTA aggregate)
+Disallow: /import/*/*/
 
 # ── SEO scraper tools (zero user-facing traffic) ──
 User-Agent: AhrefsBot
@@ -73,5 +76,13 @@ Disallow: /
 User-Agent: facebookexternalhit
 Disallow: /compare/
 Disallow: /county-compare/
+
+# ── AdSense / Ads quality crawlers — explicit scaled-content exclusion (2026-04-28) ──
+# /import/[country]/[slug]/ is noindex (HCU 4/26); country index /import/[country]/ remains indexable
+User-Agent: Mediapartners-Google
+Disallow: /import/*/*/
+
+User-Agent: AdsBot-Google
+Disallow: /import/*/*/
 
 Sitemap: https://tariffpeek.com/sitemap.xml

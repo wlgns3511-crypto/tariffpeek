@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3010",
-    "build": "next build",
+    "build:keep-sets": "tsx scripts/build-keep-sets.ts",
+    "build:sitemap": "tsx scripts/build-sitemap.ts",
+    "build": "npm run build:keep-sets && npm run build:sitemap && next build",
     "start": "next start"
   },
   "dependencies": {
@@ -20,6 +22,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

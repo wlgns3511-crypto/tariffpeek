@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getCodeBySlug, getTopCodes, getChildCodes, getRelatedCodes, getSectionById } from "@/lib/db";
+import { getCodeBySlug, getChildCodes, getRelatedCodes, getSectionById } from "@/lib/db";
 import { formatHSCode, levelLabel } from "@/lib/format";
 import { analyzeHSCode } from "@/lib/tariff-analysis";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
@@ -10,11 +10,14 @@ const SITE_URL = "https://tariffpeek.com";
 
 interface Props { params: Promise<{ slug: string }> }
 
-export const dynamicParams = true;
+export const dynamicParams = false;
 export const revalidate = 86400;
 
+// HCU 2026-04-24: /es/code/ 전면 비활성. /es/ 홈만 유지 (calcpeek 동일 패턴).
+// 한 달 운영 기간 동안 /es/code/* 는 indexed 0. middleware.ts 가 /es/code/* 를
+// 410 Gone 으로 처리하므로 generateStaticParams 는 빈 배열을 반환.
 export async function generateStaticParams() {
-  return getTopCodes(300).map((c) => ({ slug: c.slug }));
+  return [];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

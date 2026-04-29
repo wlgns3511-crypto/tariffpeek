@@ -1,12 +1,15 @@
 import { ImageResponse } from 'next/og';
-import { getCodeBySlug, getTopCodes } from '@/lib/db';
+import { getCodeBySlug, getChapters } from '@/lib/db';
 import { formatHSCode } from '@/lib/format';
 
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
+// HCU 2026-04-24: only pre-generate OG images for the 97 L2 chapters that
+// survive in the sitemap. The 3,000 leaf-slug OG images were wasted build
+// output — middleware 410s their parent HTML pages so nothing links to them.
 export function generateStaticParams() {
-  return getTopCodes(3000).map((c) => ({ slug: c.slug }));
+  return getChapters().map((c) => ({ slug: c.slug }));
 }
 
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {

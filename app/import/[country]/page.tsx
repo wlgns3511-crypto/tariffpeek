@@ -15,7 +15,7 @@ interface Props {
   params: Promise<{ country: string }>;
 }
 
-export const dynamicParams = true;
+export const dynamicParams = false;
 export const revalidate = 86400;
 
 export async function generateStaticParams() {
@@ -27,11 +27,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const countryData = getCountryBySlug(country);
   if (!countryData) return {};
 
+  const overallAvg = getCountryOverallAvg(country);
+  const ftaPartners = getCountryFtaPartners(country);
+  const topTariffs = getTariffsForCountry(country, 3);
+
+  const ftaCount = ftaPartners.length;
+  const highestRate = topTariffs.length > 0 ? topTariffs[0].mfn_rate : null;
+  const highestLabel = topTariffs.length > 0
+    ? topTariffs[0].description.replace(/[,;(].*/,"").trim().substring(0, 30).toLowerCase()
+    : null;
+  const ftaSnippet = ftaCount > 0 && ftaPartners[0]?.fta_name
+    ? ` incl. ${ftaPartners[0].fta_name}` : "";
+
   return {
-    title: `${countryData.name} Import Tariff Rates — Duty Rates by HS Code`,
-    description: `Complete guide to ${countryData.name} import tariff rates. Browse duty rates by HS code, FTA benefits, average tariffs by product category, and import requirements.`,
+    title: `${countryData.name} Tariffs: Avg ${overallAvg}% MFN | ${ftaCount} ${ftaCount === 1 ? "FTA" : "FTAs"} (2026)`,
+    description: `${countryData.name} average import tariff is ${overallAvg}% MFN.${highestRate ? ` Highest rate: ${highestLabel} at ${highestRate}%.` : ""} ${ftaCount} free trade ${ftaCount === 1 ? "agreement" : "agreements"}${ftaSnippet}. Browse duty rates for 97 HS product chapters.`,
     alternates: { canonical: `/import/${country}/` },
-    openGraph: { url: `/import/${country}/` },
+    openGraph: {
+      title: `${countryData.name} Import Tariffs — ${overallAvg}% Avg MFN Rate`,
+      description: `Compare ${countryData.name} duty rates across 97 HS chapters. ${ftaCount} FTAs available.`,
+      url: `/import/${country}/`,
+    },
   };
 }
 

@@ -1,41 +1,29 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import "./globals.css";
 import { UpgradeAnalytics } from "@/components/upgrades/UpgradeAnalytics";
 
 const GA_ID = "G-3HEG4CXES8";
 const ADSENSE_ID = "ca-pub-5724806562146685";
 const SITE_URL = "https://tariffpeek.com";
-const ROOT_LOCALES = ["es"] as const;
-type RootLocale = (typeof ROOT_LOCALES)[number];
 const ROOT_ALTERNATE_LANGUAGES = {
   en: `${SITE_URL}/`,
   es: `${SITE_URL}/es/`,
   "x-default": `${SITE_URL}/`,
 } as const;
 
-function getHtmlLang(pathname: string | null): string {
-  const locale = pathname?.split("/").filter(Boolean)[0] as RootLocale | undefined;
-  return locale && ROOT_LOCALES.includes(locale) ? locale : "en";
-}
-
 export const metadata: Metadata = {
   title: { default: "TariffPeek — HS Code Lookup & Trade Classification", template: "%s | TariffPeek" },
   description: "Search and explore Harmonized System (HS) codes for international trade. Free HS code lookup, tariff classification guide, and trade data.",
   metadataBase: new URL(SITE_URL),
   alternates: { languages: ROOT_ALTERNATE_LANGUAGES },
-  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
   openGraph: { type: "website", siteName: "TariffPeek", locale: "en_US" },
   twitter: { card: "summary_large_image" },
   other: { "google-adsense-account": "ca-pub-5724806562146685" },
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const headerStore = await headers();
-  const pathname = headerStore.get("x-pathname");
-  const htmlLang = getHtmlLang(pathname);
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang={htmlLang}>
+    <html lang="en">
       <head>
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />

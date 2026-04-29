@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getAllCodes, getCodeBySlug, getChildCodes, getRelatedCodes, getSectionById, getGlobalAvgDuty, getChapterAvgDuty, getDutyRank, getDutyPeers, getAllCountryTariffsForCode } from "@/lib/db";
+import { getChapters, getCodeBySlug, getChildCodes, getRelatedCodes, getSectionById, getGlobalAvgDuty, getChapterAvgDuty, getDutyRank, getDutyPeers, getAllCountryTariffsForCode } from "@/lib/db";
 import { InsightCards } from "@/components/InsightCards";
 import { InsightBlock } from "@/components/upgrades/InsightBlock";
 import { getTariffInsights } from "@/lib/insights";
@@ -30,11 +30,17 @@ function hsCodeFromSlug(slug: string): string | null {
   return slug.match(/^(\d{2,10})/)?.[1] ?? null;
 }
 
-export const dynamicParams = true;
+export const dynamicParams = false;
 export const revalidate = 86400;
 
+// HCU 2026-04-24: /code/ keep-set is now level=2 chapters only (97).
+// Level=4 headings (1,229) + level=6 leaves (5,613) were thin programmatic
+// pages — GSC 1-month data showed 0 clicks / almost-zero impressions on them.
+// Those 6,842 URLs now 410 Gone via middleware so the crawl budget + E-E-A-T
+// signal concentrates on the 97 real IA hubs + /import/[country]/[slug]/
+// (the actual click-earning route).
 export async function generateStaticParams() {
-  return getAllCodes().map((c) => ({ slug: c.slug }));
+  return getChapters().map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -420,7 +426,8 @@ export default async function CodePage({ params }: Props) {
             <h2 className="text-xl font-bold mb-3">Import Duty by Country</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {countryTariffs.map(ct => (
-                <a key={ct.country_slug} href={`/import/${ct.country_slug}/${code.slug}/`}
+                /* 2026-04-28 — link target redirect: /import/${country}/${slug}/ (noindex) → /import/${country}/ (indexable hub) */
+                <a key={ct.country_slug} href={`/import/${ct.country_slug}/`}
                   className="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-colors text-sm text-center">
                   <span className="font-medium text-indigo-700">{ct.country_name}</span>
                   <span className="block text-xs text-slate-500 mt-1">MFN: {ct.mfn_rate}%{ct.fta_rate != null ? ` / FTA: ${ct.fta_rate}%` : ''}</span>

@@ -28,12 +28,36 @@ export function faqSchema(faqs: { question: string; answer: string }[]) {
   };
 }
 
+/**
+ * Google's Dataset rich result requires description length 50 ≤ n ≤ 5000.
+ * HS chapter descriptions in our DB are sometimes as short as 13 chars
+ * ("Animals; live"), causing GSC "description length invalid" warnings on
+ * the Dataset schema. We pad short strings with a domain-relevant boilerplate
+ * and truncate anything over 4,900 chars to stay safely under the cap.
+ */
+const DATASET_DESC_MIN = 50;
+const DATASET_DESC_MAX = 4900;
+const DATASET_PAD_SUFFIX =
+  ' — WCO Harmonized System tariff classification with US MFN duty rates, FTA preferences, and import benchmarks sourced from USITC and USTR.';
+
+export function normalizeDatasetDescription(description: string): string {
+  const trimmed = (description ?? '').trim();
+  let out = trimmed;
+  if (out.length < DATASET_DESC_MIN) {
+    out = `${out}${DATASET_PAD_SUFFIX}`.slice(0, DATASET_DESC_MAX);
+  }
+  if (out.length > DATASET_DESC_MAX) {
+    out = `${out.slice(0, DATASET_DESC_MAX - 1).trimEnd()}…`;
+  }
+  return out;
+}
+
 export function datasetSchema(name: string, description: string) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Dataset',
     name,
-    description,
+    description: normalizeDatasetDescription(description),
     license: 'https://creativecommons.org/licenses/by/4.0/',
     creator: { '@type': 'Organization', name: 'World Customs Organization' },
     distribution: { '@type': 'DataDownload', encodingFormat: 'text/html', contentUrl: BASE_URL },

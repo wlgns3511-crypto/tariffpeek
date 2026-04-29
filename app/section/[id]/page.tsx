@@ -11,7 +11,7 @@ import { breadcrumbSchema } from "@/lib/schema";
 
 interface Props { params: Promise<{ id: string }> }
 
-export const dynamicParams = true;
+export const dynamicParams = false;
 export const revalidate = 86400;
 
 export async function generateStaticParams() {

@@ -200,7 +200,7 @@ export function getCountryFtaPartners(countrySlug: string): { fta_name: string; 
   return withDb([], (db) => db.prepare(`
     SELECT fta_name, COUNT(*) as count
     FROM country_tariffs
-    WHERE country_slug = ? AND fta_name IS NOT NULL
+    WHERE country_slug = ? AND fta_name IS NOT NULL AND fta_name != 'No FTA'
     GROUP BY fta_name
     ORDER BY count DESC
   `).all(countrySlug) as any[]);
