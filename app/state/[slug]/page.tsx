@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { getAllStates, getStateBySlug } from '@/lib/states-data';
 import { breadcrumbSchema } from '@/lib/schema';
 import { StateRich } from '@/components/state/StateRich';
+import { buildStateFacts, getStateNarrative, stateStatusLabel } from '@/lib/state-facts';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -20,13 +21,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const state = getStateBySlug(slug);
   if (!state) return {};
+  const facts = buildStateFacts(state);
   return {
-    title: `Import & Trade in ${state.name} — Ports, Top Goods & Partners`,
-    description: `${state.name} international trade overview: major ports, top imported and exported goods, key trade partners, and ${state.importVolume} in annual imports.`,
+    title: `${state.name} Trade: ${state.importVolume.replace(/ annually$/i, "")} Imports | ${state.majorPorts.length} Ports (2026)`,
+    description: `${state.name} imports ${state.importVolume} and exports ${state.exportVolume} annually. ${facts.portCount} major port${facts.portCount > 1 ? "s" : ""} including ${state.majorPorts[0]}. Top partners: ${state.topTradePartners.slice(0, 3).join(", ")}. Top imports: ${state.topImports.slice(0, 3).join(", ")}.`,
     alternates: { canonical: `/state/${slug}/` },
     openGraph: {
-      title: `Import & Trade in ${state.name}`,
-      description: `${state.name} trade data: ports, top goods, partners.`,
+      title: `${state.name} International Trade — ${state.importVolume} Imports`,
+      description: `${state.name} trade data: ${facts.portCount} ports, ${state.topTradePartners.length} partners, ${facts.isExporter ? "net exporter" : "net importer"}.`,
       url: `/state/${slug}/`,
     },
   };
@@ -42,6 +44,9 @@ export default async function StatePage({ params }: Props) {
     { name: 'By State', url: '/state/' },
     { name: state.name, url: `/state/${slug}/` },
   ];
+
+  const facts = buildStateFacts(state);
+  const narrative = getStateNarrative(slug, state, facts);
 
   const allStates = getAllStates();
   const idx = allStates.findIndex((s) => s.slug === slug);
@@ -61,7 +66,7 @@ export default async function StatePage({ params }: Props) {
       </nav>
 
       <h1 className="text-3xl font-bold text-slate-900 mb-2">Import &amp; Trade in {state.name}</h1>
-      <p className="text-lg text-slate-600 mb-6">{state.overview}</p>
+      <p className="text-lg text-slate-600 mb-6">{state.name} is {stateStatusLabel(facts.status)}, processing {state.importVolume} in imports annually. {state.overview}</p>
 
       {/* Key stats */}
       <div className="grid sm:grid-cols-2 gap-4 mb-8">
@@ -151,7 +156,7 @@ export default async function StatePage({ params }: Props) {
         ) : <span />}
       </nav>
 
-      <StateRich slug={slug} state={state} />
+      <StateRich slug={slug} state={state} facts={facts} narrative={narrative} />
 
     </div>
   );
